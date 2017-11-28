@@ -1,5 +1,5 @@
-from rtv.lib.options import parse_options
 from rtv.RTVdownloader import RTVdownloader
+from rtv.options import parse_options
 
 
 def main():
