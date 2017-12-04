@@ -1,95 +1,162 @@
-import datetime
 import os
 import re
-import time
-import uuid
-from youtube_dl import YoutubeDL
+import shlex
 
-from rtv.utils import run_command, clean_filename
+import inquirer
+import requests
+import youtube_dl
+
+from rtv.utils import clean_filename, get_site_name, supress_stdout
 
 
-class PathNotMatchedError(Exception):
-    pass
+class Podcast:
+    def __init__(self, initial_data, **kwargs):
+        self.url = None
+        self.ext = None
+        self.title = None
+
+        for key in initial_data:
+            setattr(self, key, initial_data[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    def print_all_info(self):
+        """
+        Pretty print all attributes (info) of this podcast instance.
+        Returns:
+            None
+
+        """
+        import pprint
+        pprint.pprint(self.__dict__)
+
+    def __repr__(self):
+        return f"<Podcast {{'url': '{self.url}', 'title': '{self.title}'}}>"
+
+    def __str__(self):
+        return self.title
 
 
 class Downloader:
     _VALID_URL = None  # Redefine in subclasses.
 
+    def __init__(self, url, options):
+        self.url = url
+        self.options = options
+
+        self.html = None
+        self.template = None
+        self.download_dir = None
+        self.podcasts = []
+
+        self.load_options()
+        self.get_podcast_entries()
+
     @classmethod
     def validate_url(cls, url):
-        """ Check if the Downloader can handle the specific url."""
+        """
+        Check if the Downloader can handle the given url.
+        Args:
+            url (str): Url of the podcast.
+
+        Returns:
+            re.match object or None if the string does not match the pattern.
+
+        """
         match = re.match(cls._VALID_URL, url)
         return match
 
-    @classmethod
-    def get_real_url(cls, url):
-        """ Get the real url of video/audio file."""
-        return url
+    def load_options(self):
+        site_name = get_site_name(self.url)
+        self.template = self.options['name_tmpls'].get(site_name)
+        self.download_dir = self.options['dl_path']
 
-    @classmethod
-    def _real_download(cls, path, url):
-        """ Redefine in subclasses."""
-        run_command(f'youtube-dl -f worst[ext=mp4]/worstvideo+bestaudio/bestaudio '
-                    f'--merge-output-format "mp4" '
-                    f'-o "{path}" '
-                    f'{url}')
+    def get_podcast_entries(self):
+        info = self.get_info()
+        for entry in info.get('entries'):
+            podcast = Podcast(entry)
+            self.podcasts.append(podcast)
+
+    @staticmethod
+    def choose_podcasts(choices):
+        questions = [
+            inquirer.Checkbox('podcasts',
+                              message="What podcasts are you interested in?",
+                              choices=choices,
+                              ),
+        ]
+        answers = inquirer.prompt(questions)
+        return answers['podcasts']
+
+    def get_html(self):
+        r = requests.get(self.url)
+        self.html = r.text
+
+    def _real_download(self, podcast, path):
+        """
+        Effective download to current working directory location, using youtube-dl by default.
+        Redefine in subclasses.
+        Returns:
+            None
+
+        """
+        command = f'youtube-dl ' \
+                  f'-f worst[ext={podcast.ext}]/worstvideo+bestaudio/bestaudio ' \
+                  f'--merge-output-format "{podcast.ext}" ' \
+                  f'-o "{path}" ' \
+                  f'{podcast.url}'
+        youtube_dl.main(shlex.split(command)[1:])
         # TODO: add quality/format? option handling
-        # TODO: fixed mp4 format - improve it
 
-    @classmethod
-    def download_podcast(cls, url, dl_path, name_tmpl):
-        real_url = cls.get_real_url(url)
+    def download(self):
+        """
+        Choose podcasts to download and download them to target location.
+        Returns:
+            None
 
-        unique_filename = str(uuid.uuid4())
-        extension = cls.get_info(url).get('ext')
-        tmp_path = os.path.join(dl_path, f'{unique_filename}.{extension}')
+        """
+        download_list = self.choose_podcasts(self.podcasts)  # TODO: one podcast handling
+        for podcast in download_list:
+            path = self.render_path(podcast)
+            self._real_download(podcast, path)
 
-        cls._real_download(tmp_path, real_url)
+    def render_path(self, podcast):
+        """
+        Render path by filling the path template with podcast information.
+        Args:
+            podcast (Podcast): Podcast object.
 
-        new_path = cls.generate_path(tmp_path, dl_path, name_tmpl, url)
-        cls.rename_podcast(tmp_path, new_path)
+        Returns:
+            str: Absolute path with the template values filled in.
 
-    @classmethod
-    def get_info(cls, url):
-        # TODO: supress output in this block?
-        with YoutubeDL() as ydl:
-            info_dict = ydl.extract_info(url, download=False)
-            return info_dict
+        """
 
-    @classmethod
-    def generate_path(cls, current_path, dl_path, name_tmpl, url):
-        path_tmpl = os.path.join(dl_path, name_tmpl)
-
-        metadata = cls.get_metadata(current_path)
-        info = cls.get_info(url)
-        file_info = {**metadata, **info}
-
-        path = cls.render_path(path_tmpl, file_info)
-        return path
-
-    @classmethod
-    def get_metadata(cls, path):
-        metadata = dict()
-        metadata['date'] = datetime.datetime.strptime(time.ctime(os.path.getmtime(path)), "%a %b %d %H:%M:%S %Y")
-        metadata['size'] = os.path.getsize(path)
-        return metadata
-
-    @classmethod
-    def render_path(cls, path_tmpl, file_info):
-        path = path_tmpl.format(
-            date=file_info['date'],
-            show_name=file_info.get('show_name', 'default show_name'),
-            title=file_info.get('title', 'default title'),
-            ext=file_info.get('ext', 'abc')  # add reasonable default
-        )
-        # TODO: clean, preprocessing of the values in file_info that gonna be used and just unpack file_info dict
-
-        location, filename = os.path.split(path)
-        filename = clean_filename(filename)
-        path = os.path.join(location, filename)
+        values = podcast.__dict__  # :/)
+        # TODO: Fix defaults (add formatter)
+        filename = clean_filename(self.template.format(**values))
+        path = os.path.join(self.download_dir, filename)
 
         return path
 
-    @classmethod
-    def rename_podcast(cls, old_path, new_path):
-        os.rename(old_path, new_path)
+    def get_info(self):
+        """
+        Get information about podcasts. Redefine in subclasses.
+        Returns:
+            dict: Dictionary containing various information such as title, extension, date.
+
+        """
+        with supress_stdout():
+            with youtube_dl.YoutubeDL() as ydl:
+                info_dict = ydl.extract_info(self.url, download=False)
+                #  TODO: add quality choice, add formats field to Podcast,
+                # TODO: add support for _real_download(podcast, quality)
+                return info_dict
+
+    # TODO: rethink its usage?? is it ever needed to update all entries?
+    @staticmethod
+    def update_podcast_info_entries(podcast_info: dict, update_dict: dict):
+        entries = podcast_info.get('entries', [{}])
+        for entry in entries:
+            entry.update(update_dict)
+
+        podcast_info['entries'] = entries

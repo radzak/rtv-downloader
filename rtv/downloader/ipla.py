@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup
 import datetime
 import json
+
 import requests
-import urllib.request
+from bs4 import BeautifulSoup
 
 from rtv.downloader.common import Downloader
 from rtv.utils import get_ext
@@ -11,14 +11,13 @@ from rtv.utils import get_ext
 class IplaDL(Downloader):
     _VALID_URL = r'https?://(?:www\.)?ipla\.tv/'
 
-    @classmethod
-    def _parse_podcast_date(cls, date_raw):
-        data = datetime.datetime.strptime(date_raw, '%d-%m-%Y')
-        return data
+    @staticmethod
+    def _parse_podcast_date(date_str):
+        date = datetime.datetime.strptime(date_str, '%d-%m-%Y')
+        return date
 
-    @classmethod
-    def get_json_url(cls, url):
-        r = requests.get(url)
+    def get_json_url(self):
+        r = requests.get(self.url)
         html = r.text
         soup = BeautifulSoup(html, 'html.parser')
         data_vod = soup.find('div', {'id': 'vod-player'})['data-vod-json']
@@ -29,32 +28,29 @@ class IplaDL(Downloader):
         )
         return url
 
-    @classmethod
-    def get_real_url(cls, url):
+    def get_info(self):
         """
-        Temporary solution for getting url of the worstpossible quality.
-        It will get enhanced as soon as we introduce the quality choice option.
+        Get info about the ipla podcast - get the url containing json data and construct
+        a dictionary with 'entries' key.
+        Returns:
+            dict: Podcast info dictionary.
+
         """
-        # TODO: introduce quality choice option
-        podcast_info = cls.get_info(url)
-
-        formats = podcast_info['copies']
-        url = min(formats, key=lambda k: k['quality'])['url']  # temporary solution, just get the lowest quality
-        return url
-
-    @classmethod
-    def get_info(cls, url):
-        url = cls.get_json_url(url)
+        url = self.get_json_url()
         r = requests.get(url)
         podcast_info = r.json()['vod']
-        podcast_info.update({
-            'date': cls._parse_podcast_date(podcast_info['date']),
-            'ext': get_ext(podcast_info['video_hd']),
-        })
-        print(podcast_info['title'])
-        return podcast_info
 
-    @classmethod
-    def _real_download(cls, path, url):
-        # https://stackoverflow.com/questions/2795331/python-download-without-supplying-a-filename
-        urllib.request.urlretrieve(url, f'{path}')
+        # TODO: Refactor & put copies into formats key
+
+        formats = podcast_info['copies']
+        entry = min(formats, key=lambda k: k['quality'])  # temporary solution, just get the lowest quality
+
+        podcast_info.update(entry)
+        podcast_info.update({
+            'description': podcast_info.pop('long_text'),
+            'date': self._parse_podcast_date(podcast_info['date']),
+            'ext': get_ext(podcast_info['url']),
+        })
+
+        del podcast_info['copies']
+        return {'entries': [podcast_info]}

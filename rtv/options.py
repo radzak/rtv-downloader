@@ -15,7 +15,7 @@ def parse_options():
                     http://strftime.org/
                 {title} - title of podcast (supported only by youtube-dl)
 
-    Return:
+    Returns:
         options, urls
     """
     parser = argparse.ArgumentParser(description='Podcast downloader by radzak.')
@@ -33,9 +33,9 @@ def parse_options():
             'polsatnews': '{date:%d-%m} {title}.{ext}',
             'vod': '{date:%d-%m} {show_name} {title}.{ext}',
             'ipla': '{date:%d-%m} {title}.{ext}',  # add showname here
+            'rmf24': '{date:%d-%m} {show_name} {title}.{ext}',
         }
     }
-    # TODO: Add autoextension handler
     # TODO: Add OneTab links support
     # TODO: Add -f file option, so you can download from a file
     # TODO: Add multithreading

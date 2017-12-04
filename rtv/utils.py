@@ -1,60 +1,57 @@
+import contextlib
 import os
 import re
-import subprocess
 import sys
 import urllib.parse
 
-from rtv.nbstreamreader import NonBlockingStreamReader as NBSR
+
+class DevNull:
+    def write(self, *args, **kwargs):
+        pass
+
+    def flush(self):
+        pass
 
 
-# TODO: Find a good place for Exceptions
-# TODO: Check if you can pass info to exception so it gets printed when occurs
-class UrlNotMatchedError(Exception):
-    pass
-
-
-class DateNotMatchedError(Exception):
-    pass
-
-
-class TitleNotMatchedError(Exception):
-    pass
-
-
-def run_command(command, file=sys.stdout):
-    p = subprocess.Popen(command, stdout=subprocess.PIPE)
-    # while True:
-    #     out = p.stdout.read(1)
-    #     if out == '' and not p.poll():
-    #         break
-    #     if out != '':
-    #         file.write(out.decode())
-    #         file.flush()
-
-    while True:
-        out = p.stdout.read(1)
-        if not out:  # TODO: try if out print out, additionaly if not p.poll(): break
-            break
-        file.write(out.decode())
-        file.flush()
-    p.wait()
+@contextlib.contextmanager
+def supress_stdout():
+    save_stdout = sys.stdout
+    sys.stdout = DevNull()
+    yield
+    sys.stdout = save_stdout
 
 
 def get_site_name(url):
     match = re.search(r'(?:http|https)://(?:www\.)?(?P<site_name>[\w.]+)\..*', url)
     if match:
         return match.group('site_name')
-    else:
-        raise UrlNotMatchedError
 
 
 def clean_filename(filename):
     """
     Remove unsupported filename characters.
-    On Windows filenames cannot contain any of \/:*?"<>| characters.
-    Effectively remove all characters except alphanumeric, -_#., and spaces.
+    On Windows file names cannot contain any of \/:*?"<>| characters.
+    Effectively remove all characters except alphanumeric, -_#.,() and spaces.
     """
-    return re.sub('[^\w\-_#., ]', '', filename)
+    return re.sub('[^\w\-_#.,() ]', '', filename)
+
+
+def rename_file(path, new_path):
+    """
+    Rename/move a file and remove unsupported characters from the filename.
+    Args:
+        path (str): Current path of a file.
+        new_path (str): New path to a file.
+
+    Returns:
+        None
+
+    """
+    location, filename = os.path.split(new_path)
+    filename = clean_filename(filename)
+    new_path = os.path.join(location, filename)
+
+    os.rename(path, new_path)
 
 
 def get_ext(url):

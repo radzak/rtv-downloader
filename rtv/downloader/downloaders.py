@@ -5,3 +5,4 @@ from .vodtvp import VodTVPDL
 from .polsatnews import PolsatNewsDL
 from .vod import VodDL
 from .ipla import IplaDL
+from .rmf24 import Rmf24DL

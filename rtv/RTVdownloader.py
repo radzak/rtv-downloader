@@ -1,4 +1,5 @@
-from rtv.utils import get_site_name
+import validators
+
 from rtv.downloader import gen_downloader_classes
 
 
@@ -7,19 +8,20 @@ class RTVdownloader:
         self.options = options
         self.downloaders = []
 
-        self.add_default_downloaders()
+        self.add_default_downloaders()  # ???
 
     def download(self, url_list):
         for url in url_list:
-            site = get_site_name(url)
+            if not validators.url(url):
+                print(f'This is not a valid url: {url}, skipping...')
+                continue
 
-            # TODO: fix site matching, fix default template
-            name_tmpl = self.options['name_tmpls'].get(site, '{date} abc.mp3')
-            dl_path = self.options['dl_path']
-
-            for downloader in self.downloaders:
-                if downloader.validate_url(url):
-                    downloader.download_podcast(url, dl_path, name_tmpl)
+            for DL in self.downloaders:
+                if DL.validate_url(url):
+                    downloader = DL(url, self.options)
+                    # downloader.download()
+                    # print(downloader.podcasts)
+                    print(downloader.get_info())
                     break
             else:
                 print(f'None of the downloaders can handle this url: {url}')
