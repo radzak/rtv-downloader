@@ -12,10 +12,10 @@ class VodDL(Downloader):
     _VALID_URL = r'https?://(?:www\.)?vod\.pl/'
 
     # TODO: Check if youtube-dl works with VOD podcasts
-    def _real_download(self, podcast, path):
+    def _real_download(self, podcast, path, quality):
         with open(path, 'wb') as f:
             start = time.clock()
-            r = requests.get(podcast.url, stream=True)
+            r = requests.get(podcast.url(quality), stream=True)
             total_length = int(r.headers.get('content-length'))
             dl = 0
             if total_length is None:  # no content length header
