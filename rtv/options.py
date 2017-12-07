@@ -28,12 +28,11 @@ def parse_options():
             'polskieradio': '{date:%d-%m} {title}.{ext}',
             'audycje.tokfm': '{date:%d-%m} {title}.{ext}',
             'radiozet': '{date:%d-%m} {show_name} - {title}.{ext}',
-            'vod.tvp': '{date:%d-%m} {title}.{ext}',
-            # 'vod.tvp': '{date:%d-%m} {show_name} - {title}.{ext}',  # TODO: Add showname in to VodTVPDL
+            'vod.tvp': '{date:%d-%m} {title}.{ext}',  # Add showname?
             'polsatnews': '{date:%d-%m} {title}.{ext}',
             'vod': '{date:%d-%m} {show_name} {title}.{ext}',
-            'ipla': '{date:%d-%m} {title}.{ext}',  # add showname here
-            'rmf24': '{date:%d-%m} {show_name} {title}.{ext}',
+            'ipla': '{date:%d-%m} {title}.{ext}',  # add showname?
+            'rmf24': '{date:%d-%m} {title}.{ext}',  # add showname?
         }
     }
     # TODO: Add OneTab links support
