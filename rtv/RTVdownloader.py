@@ -19,9 +19,12 @@ class RTVdownloader:
             for DL in self.downloaders:
                 if DL.validate_url(url):
                     downloader = DL(url, self.options)
-                    # downloader.download()
+                    downloader.download(quality='worst')
+
                     # print(downloader.podcasts)
-                    print(downloader.get_info())
+                    # import pprint
+                    # pprint.pprint(downloader.get_info())
+                    # downloader.podcasts[1].print_data()
                     break
             else:
                 print(f'None of the downloaders can handle this url: {url}')

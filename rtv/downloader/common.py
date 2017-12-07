@@ -7,20 +7,71 @@ import requests
 import youtube_dl
 
 from rtv.utils import clean_filename, get_site_name, supress_stdout
+from rtv.exceptions import WrongQualityError
 
 
 class Podcast:
-    def __init__(self, initial_data, **kwargs):
-        self.url = None
-        self.ext = None
-        self.title = None
+    def __init__(self, podcast_data):
+        self.data = podcast_data
 
-        for key in initial_data:
-            setattr(self, key, initial_data[key])
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
+    def choose_format(self, quality):
+        quality_func = {
+            'worst': min,
+            'best': max
+        }
+        formats = self.data.get('formats')
+        if formats:
+            func = quality_func[quality]
+            choice = func(formats, key=lambda f: f.get('quality') or f.get('height'))
 
-    def print_all_info(self):
+            # TODO: Fix IT!!!! it might mix quality with height
+            # In[5]: min([{'height': 24}, {'quality': 23, 'height': 0}], key=lambda f: f.get(
+            #     ...: 'quality') or f.get('height'))
+            # Out[5]: {'height': 0, 'quality': 23}
+        else:
+            choice = self.data
+            # not sure about clarity, but self.data contains all format information
+            # if there is not 'formats' key in the dictionary
+        return choice
+
+    def info(self, quality='worst'):
+        """
+        Get podcast info, depending on the given quality. If there are no formats in podcast data,
+        return the values associated with the entire podcast, not with any specific quality.
+        Args:
+            quality (str): String representation of quality ('worst'/'best'), worst by default.
+
+        Returns:
+            dict: Dictionary containing most important information about the podcast of given
+            quality, i.e. url, ext, but also more general information such as title, show name,
+            date.
+
+        """
+
+        f = self.choose_format(quality)
+        return {
+            'title': self.data.get('title'),
+            'show_name': self.data.get('show_name'),
+            'date': self.data.get('date'),
+
+            # format specific data
+            'url': f.get('url'),
+            'ext': f.get('ext'),
+        }
+
+    def ext(self, quality: str) -> str:
+        data = self.info(quality)
+        return data['ext']
+
+    def url(self, quality: str) -> str:
+        data = self.info(quality)
+        return data['url']
+
+    @property
+    def title(self):
+        return self.data.get('title')
+
+    def print_data(self):
         """
         Pretty print all attributes (info) of this podcast instance.
         Returns:
@@ -28,7 +79,7 @@ class Podcast:
 
         """
         import pprint
-        pprint.pprint(self.__dict__)
+        pprint.pprint(self.data)
 
     def __repr__(self):
         return f"<Podcast {{'url': '{self.url}', 'title': '{self.title}'}}>"
@@ -92,48 +143,60 @@ class Downloader:
         r = requests.get(self.url)
         self.html = r.text
 
-    def _real_download(self, podcast, path):
+    def _real_download(self, podcast, path, quality):
         """
         Effective download to current working directory location, using youtube-dl by default.
         Redefine in subclasses.
+        Args:
+            podcast (Podcast):
+            path (str):
+            quality (str): Quality of the video (best/worst). Audio quality defaults to best.
+
         Returns:
             None
 
         """
+        if quality not in ('worst', 'best'):
+            raise WrongQualityError
+
         command = f'youtube-dl ' \
-                  f'-f worst[ext={podcast.ext}]/worstvideo+bestaudio/bestaudio ' \
-                  f'--merge-output-format "{podcast.ext}" ' \
+                  f'-f {quality}[ext={podcast.ext(quality)}]/{quality}video+bestaudio/bestaudio ' \
+                  f'--merge-output-format "{podcast.ext(quality)}" ' \
                   f'-o "{path}" ' \
-                  f'{podcast.url}'
+                  f'{podcast.url(quality)}'
         youtube_dl.main(shlex.split(command)[1:])
-        # TODO: add quality/format? option handling
 
-    def download(self):
+    def download(self, quality=None):
         """
-        Choose podcasts to download and download them to target location.
+        Choose podcasts to download and download them to target location. Choose worst quality
+        by default, to decrease file size.
         Returns:
             None
 
         """
+        if not quality:
+            quality = self.options.get('quality', 'worst')
+
         download_list = self.choose_podcasts(self.podcasts)  # TODO: one podcast handling
         for podcast in download_list:
-            path = self.render_path(podcast)
-            self._real_download(podcast, path)
+            path = self.render_path(podcast, quality)
+            self._real_download(podcast, path, quality)
 
-    def render_path(self, podcast):
+    def render_path(self, podcast, quality):
         """
         Render path by filling the path template with podcast information.
         Args:
             podcast (Podcast): Podcast object.
+            quality (str): String representation of quality ('worst'/'best').
 
         Returns:
             str: Absolute path with the template values filled in.
 
         """
-
-        values = podcast.__dict__  # :/)
         # TODO: Fix defaults (add formatter)
-        filename = clean_filename(self.template.format(**values))
+
+        filename_raw = self.template.format(**podcast.info(quality))
+        filename = clean_filename(filename_raw)
         path = os.path.join(self.download_dir, filename)
 
         return path
@@ -148,8 +211,6 @@ class Downloader:
         with supress_stdout():
             with youtube_dl.YoutubeDL() as ydl:
                 info_dict = ydl.extract_info(self.url, download=False)
-                #  TODO: add quality choice, add formats field to Podcast,
-                # TODO: add support for _real_download(podcast, quality)
                 return info_dict
 
     # TODO: rethink its usage?? is it ever needed to update all entries?

@@ -49,16 +49,14 @@ class CommonDownloaderTests:
     def test_url_validation(self, url):
         assert self.downloader_class.validate_url(url)
 
-    def test_get_info_contains_nonempty_entries(self, downloader):
-        assert downloader.get_info().get('entries')
-
-    def test_get_info_entries_contain_necessary_data(self, downloader):
-        entries = downloader.get_info().get('entries')
-        for e in entries:
-            url = e.pop('url')
-            title = e.pop('title')
-            ext = e.pop('ext')
-            date = e.pop('date')
+    def test_all_podcasts_have_neccessary_info(self, downloader):
+        podcasts = downloader.podcasts
+        for p in podcasts:
+            info = p.info()
+            url = info.pop('url')
+            title = info.pop('title')
+            ext = info.pop('ext')
+            date = info.pop('date')
             assert url and title and ext and date
 
     # def test_path_rendering(self, downloader, rendered_path):

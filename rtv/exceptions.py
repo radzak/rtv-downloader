@@ -4,3 +4,7 @@ class PathNotMatchedError(Exception):
 
 class PodcastIdNotMatchedError(Exception):
     pass
+
+
+class WrongQualityError(Exception):
+    pass
