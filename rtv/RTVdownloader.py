@@ -24,7 +24,7 @@ class RTVdownloader:
                     # print(downloader.podcasts)
                     # import pprint
                     # pprint.pprint(downloader.get_info())
-                    # downloader.podcasts[1].print_data()
+                    # downloader.podcasts[0].print_data()
                     break
             else:
                 print(f'None of the downloaders can handle this url: {url}')

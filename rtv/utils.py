@@ -22,7 +22,13 @@ def supress_stdout():
 
 
 def get_site_name(url):
-    match = re.search(r'(?:http|https)://(?:www\.)?(?P<site_name>[\w.]+)\..*', url)
+    match = re.match(r'^'
+                     r'(?:http|https)://'
+                     r'(?:www\.)?'
+                     r'(?:.*\.)?'
+                     r'(?P<site_name>[\w.]+)\.'
+                     r'.*',
+                     url)
     if match:
         return match.group('site_name')
 
@@ -55,7 +61,7 @@ def rename_file(path, new_path):
 
 
 def get_ext(url):
-    """Return the filename extension from url, or ''."""
+    """Return the filename extension from url, or '' if ext. is not present."""
     parsed = urllib.parse.urlparse(url)
     root, ext = os.path.splitext(parsed.path)
     return ext.lstrip('.')

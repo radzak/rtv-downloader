@@ -139,7 +139,7 @@ class TestRadioZetDownloader(CommonDownloaderTests):
 
 
 class TestTokFmDownloader(CommonDownloaderTests):
-    site_name = 'audycje.tokfm'
+    site_name = 'tokfm'
     urls = [
         'http://audycje.tokfm.pl/podcast/Instrukcja-obslugi-nastolatka-Mowi-Olga-Wozniak/56655',
     ]
@@ -149,7 +149,7 @@ class TestTokFmDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'audycje.tokfm': '{date:%d-%m} {title}.{ext}'
+            'tokfm': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = TokFmDL
@@ -173,7 +173,7 @@ class TestVodDownloader(CommonDownloaderTests):
 
 
 class TestVodTVPDownloader(CommonDownloaderTests):
-    site_name = 'vod.tvp'
+    site_name = 'tvp'
     urls = [
         'https://vod.tvp.pl/video/warto-rozmawiac,30112017,34760315',
     ]
@@ -183,7 +183,7 @@ class TestVodTVPDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'vod.tvp': '{date:%d-%m} {title}.{ext}'
+            'tvp': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = VodTVPDL
@@ -204,3 +204,20 @@ class TestRmf24Downloader(CommonDownloaderTests):
         }
     }
     downloader_class = Rmf24DL
+
+
+class TestTvn24Downloader(CommonDownloaderTests):
+    site_name = 'tvn24'
+    urls = [
+        'https://www.tvn24.pl/politico-ziobro-wsrod-osob-ktore-beda-ksztaltowac-europe-w-2018-roku,796687,s.html',
+    ]
+    rendered_paths = [
+        ['/tmp/07-12 Za twarzą cherubinka kryje siępolityczny wojownik. Zbigniew Ziobro w rankingu Politico.mp4'],
+    ]
+    options = {
+        'dl_path': '/tmp',
+        'name_tmpls': {
+            'tvn24': '{date:%d-%m} {title}.{ext}'
+        }
+    }
+    downloader_class = Tvn24DL

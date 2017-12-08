@@ -28,7 +28,8 @@ class PolsatNewsDL(Downloader):
             return match.group('show_name').replace('-', ' ')
 
     def get_podcast_title(self):
-        return self.get_podcast_show_name()  # These shows have no title, only show_name and description
+        # These shows have no title, only show_name and description
+        return self.get_podcast_show_name()
 
     def get_info(self):
         podcast_info = super().get_info()

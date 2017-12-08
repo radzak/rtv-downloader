@@ -26,13 +26,14 @@ def parse_options():
         'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
         'name_tmpls': {
             'polskieradio': '{date:%d-%m} {title}.{ext}',
-            'audycje.tokfm': '{date:%d-%m} {title}.{ext}',
+            'tokfm': '{date:%d-%m} {title}.{ext}',
             'radiozet': '{date:%d-%m} {show_name} - {title}.{ext}',
-            'vod.tvp': '{date:%d-%m} {title}.{ext}',  # Add showname?
+            'tvp': '{date:%d-%m} {title}.{ext}',  # Add showname?
             'polsatnews': '{date:%d-%m} {title}.{ext}',
             'vod': '{date:%d-%m} {show_name} {title}.{ext}',
             'ipla': '{date:%d-%m} {title}.{ext}',  # add showname?
             'rmf24': '{date:%d-%m} {title}.{ext}',  # add showname?
+            'tvn24': '{date:%d-%m} {title}.{ext}',  # add showname?
         }
     }
     # TODO: Add OneTab links support
