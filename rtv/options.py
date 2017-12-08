@@ -34,6 +34,7 @@ def parse_options():
             'ipla': '{date:%d-%m} {title}.{ext}',  # add showname?
             'rmf24': '{date:%d-%m} {title}.{ext}',  # add showname?
             'tvn24': '{date:%d-%m} {title}.{ext}',  # add showname?
+            'tvpparlament': '{date:%d-%m} {title}.{ext}',
         }
     }
     # TODO: Add OneTab links support

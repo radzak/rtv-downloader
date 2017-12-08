@@ -221,3 +221,20 @@ class TestTvn24Downloader(CommonDownloaderTests):
         }
     }
     downloader_class = Tvn24DL
+
+
+class TestTvpParlamentDownloader(CommonDownloaderTests):
+    site_name = 'tvpparlament'
+    urls = [
+        'http://www.tvpparlament.pl/retransmisje-vod/inne/przesluchanie-przez-komisja-ds-amber-gold-b-dyr-biura-kolegium-ds-sluzb-specjalnych-w-kprm-tomasza-borkowskiego/35118797',
+    ]
+    rendered_paths = [
+        ['/tmp/06-12 Przesłuchanie przez komisja ds. Amber Gold b. dyr. biura Kolegium ds. służb specjalnych w KPRM Tomasza Borkowskiego.mp4'],
+    ]
+    options = {
+        'dl_path': '/tmp',
+        'name_tmpls': {
+            'tvpparlament': '{date:%d-%m} {title}.{ext}'
+        }
+    }
+    downloader_class = TvpParlamentDL
