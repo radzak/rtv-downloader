@@ -8,3 +8,4 @@ from .ipla import IplaDL
 from .rmf24 import Rmf24DL
 from .tvn24 import Tvn24DL
 from .tvpparlament import TvpParlamentDL
+from .tvpinfo import TvpInfoDL

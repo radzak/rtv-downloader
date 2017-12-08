@@ -15,7 +15,3 @@ if __name__ == '__main__':
 
 # TODO: add description to file from get_info (youtube-dl)
 # TODO: add max download time and retry?
-
-# TODO: add support for tvp.info http://www.tvp.info/437819/minela-dwudziesta
-# TODO: add support for https://www.tvn24.pl/loza-prasowa,25,m
-# TODO: add support for https://faktypofaktach.tvn24.pl/

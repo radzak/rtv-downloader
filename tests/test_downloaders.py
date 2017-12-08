@@ -69,7 +69,7 @@ class CommonDownloaderTests:
 # TODO: make dl_path as pytest tmpdir, also generate rendered_paths with given filenames and dl_paths
 
 class TestPolskieRadioDownloader(CommonDownloaderTests):
-    site_name = 'polskieradio'
+    site_name = 'polskieradio.pl'
     urls = [
         'https://www.polskieradio.pl/9/300/Artykul/1919007,Nowa-konstytucja-Swieto-i-referendum-w-jednym-czasie',
     ]
@@ -79,14 +79,14 @@ class TestPolskieRadioDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'polskieradio': '{date:%d-%m} {title}.{ext}'
+            'polskieradio.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = PolskieRadioDL
 
 
 class TestIplaDownloader(CommonDownloaderTests):
-    site_name = 'ipla'
+    site_name = 'ipla.tv'
     urls = [
         'https://www.ipla.tv/Gosc-wydarzen-michal-wojcik/vod-10987691',
         'https://www.ipla.tv/Gosc-wydarzen-mikolaj-wild/vod-10906015',
@@ -98,14 +98,14 @@ class TestIplaDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'ipla': '{date:%d-%m} {title}.{ext}'
+            'ipla.tv': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = IplaDL
 
 
 class TestPolsatNewsDownloader(CommonDownloaderTests):
-    site_name = 'polsatnews'
+    site_name = 'polsatnews.pl'
     urls = [
         'http://www.polsatnews.pl/wideo-program/dorotagawrylukzaprasza-29112017_6496311/',
     ]
@@ -115,14 +115,14 @@ class TestPolsatNewsDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'polsatnews': '{date:%d-%m} {title}.{ext}'
+            'polsatnews.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = PolsatNewsDL
 
 
 class TestRadioZetDownloader(CommonDownloaderTests):
-    site_name = 'radiozet'
+    site_name = 'radiozet.pl'
     urls = [
         'http://www.radiozet.pl/Radio/Programy/Sniadanie-w-Radiu-ZET/Kownacki-Poprzemy-prezydenckie-ustawy-ws.-reformy-sadownictwa-jesli-nie-bedzie-to-tuszowanie-i-pozorowanie-reformy',
     ]
@@ -132,14 +132,14 @@ class TestRadioZetDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'radiozet': '{date:%d-%m} {title}.{ext}'
+            'radiozet.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = RadioZetDL
 
 
 class TestTokFmDownloader(CommonDownloaderTests):
-    site_name = 'tokfm'
+    site_name = 'tokfm.pl'
     urls = [
         'http://audycje.tokfm.pl/podcast/Instrukcja-obslugi-nastolatka-Mowi-Olga-Wozniak/56655',
     ]
@@ -149,14 +149,14 @@ class TestTokFmDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'tokfm': '{date:%d-%m} {title}.{ext}'
+            'tokfm.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = TokFmDL
 
 
 class TestVodDownloader(CommonDownloaderTests):
-    site_name = 'vod'
+    site_name = 'vod.pl'
     urls = [
         'https://vod.pl/programy-onetu/tomasz-lis-joanna-mucha-michal-kaminski-i-cezary-kucharski-910/90hqt84',
     ]
@@ -166,14 +166,14 @@ class TestVodDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'vod': '{date:%d-%m} {title}.{ext}'
+            'vod.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = VodDL
 
 
 class TestVodTVPDownloader(CommonDownloaderTests):
-    site_name = 'tvp'
+    site_name = 'tvp.pl'
     urls = [
         'https://vod.tvp.pl/video/warto-rozmawiac,30112017,34760315',
     ]
@@ -183,14 +183,14 @@ class TestVodTVPDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'tvp': '{date:%d-%m} {title}.{ext}'
+            'tvp.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = VodTVPDL
 
 
 class TestRmf24Downloader(CommonDownloaderTests):
-    site_name = 'rmf24'
+    site_name = 'rmf24.pl'
     urls = [
         'http://www.rmf24.pl/tylko-w-rmf24/rozmowa/news-abp-gadecki-o-rozancu-do-granic-przygotowane-nie-przez-ksiez,nId,2449655',
     ]
@@ -200,31 +200,33 @@ class TestRmf24Downloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'rmf24': '{date:%d-%m} {title}.{ext}'
+            'rmf24.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = Rmf24DL
 
 
 class TestTvn24Downloader(CommonDownloaderTests):
-    site_name = 'tvn24'
+    site_name = 'tvn24.pl'
     urls = [
         'https://www.tvn24.pl/politico-ziobro-wsrod-osob-ktore-beda-ksztaltowac-europe-w-2018-roku,796687,s.html',
+        'https://www.tvn24.pl/loza-prasowa,25,m/loza-prasowa-26-11-2017,793720.html',
     ]
     rendered_paths = [
         ['/tmp/07-12 Za twarzą cherubinka kryje siępolityczny wojownik. Zbigniew Ziobro w rankingu Politico.mp4'],
+        ['/tmp/27-11 Loża prasowa.mp4']
     ]
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'tvn24': '{date:%d-%m} {title}.{ext}'
+            'tvn24.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = Tvn24DL
 
 
 class TestTvpParlamentDownloader(CommonDownloaderTests):
-    site_name = 'tvpparlament'
+    site_name = 'tvpparlament.pl'
     urls = [
         'http://www.tvpparlament.pl/retransmisje-vod/inne/przesluchanie-przez-komisja-ds-amber-gold-b-dyr-biura-kolegium-ds-sluzb-specjalnych-w-kprm-tomasza-borkowskiego/35118797',
     ]
@@ -234,7 +236,24 @@ class TestTvpParlamentDownloader(CommonDownloaderTests):
     options = {
         'dl_path': '/tmp',
         'name_tmpls': {
-            'tvpparlament': '{date:%d-%m} {title}.{ext}'
+            'tvpparlament.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
     downloader_class = TvpParlamentDL
+
+
+class TestTvpInfoDownloader(CommonDownloaderTests):
+    site_name = 'tvp.info'
+    urls = [
+        'http://www.tvp.info/35115550/spotkanie-u-prezydenta-zaprosil-premier-i-prezesa-pis',
+    ]
+    rendered_paths = [
+        ['/tmp/12-07 Spotkanie u prezydenta. Zaprosił premier i prezesa PiS.mp4'],
+    ]
+    options = {
+        'dl_path': '/tmp',
+        'name_tmpls': {
+            'tvp.info': '{date:%d-%m} {title}.{ext}'
+        }
+    }
+    downloader_class = TvpInfoDL

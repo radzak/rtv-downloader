@@ -25,12 +25,34 @@ def get_site_name(url):
     match = re.match(r'^'
                      r'(?:http|https)://'
                      r'(?:www\.)?'
-                     r'(?:.*\.)?'
-                     r'(?P<site_name>[\w.]+)\.'
+                     r'.*?'
+                     r'(?P<site_name>\w+\.\w+)/'
                      r'.*',
                      url)
     if match:
         return match.group('site_name')
+
+
+def clean_podcast_info(info: dict):
+    if 'title' in info:
+        info.update(
+            title=clean_title(info.pop('title'))
+        )
+
+
+def clean_title(title):
+    date_regex = r'\s*' \
+                 r'\d{1,2}' \
+                 r'[/\-.]' \
+                 r'\d{1,2}' \
+                 r'[/\-.]' \
+                 r'(?=\d*)(?:.{4}|.{2})' \
+                 r'\s*'
+
+    title = re.sub(date_regex, ' ', title)
+    title = re.sub(r'\s{2,}', ' ', title)
+    title = title.strip()
+    return title
 
 
 def clean_filename(filename):

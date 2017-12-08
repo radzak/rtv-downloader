@@ -6,7 +6,7 @@ import inquirer
 import requests
 import youtube_dl
 
-from rtv.utils import clean_filename, get_site_name, supress_stdout
+from rtv.utils import clean_filename, clean_podcast_info, get_site_name, supress_stdout
 from rtv.exceptions import WrongQualityError
 
 
@@ -194,8 +194,10 @@ class Downloader:
 
         """
         # TODO: Fix defaults (add formatter)
+        podcast_info = podcast.info(quality)
+        clean_podcast_info(podcast_info)
 
-        filename_raw = self.template.format(**podcast.info(quality))
+        filename_raw = self.template.format(**podcast_info)
         filename = clean_filename(filename_raw)
         path = os.path.join(self.download_dir, filename)
 
