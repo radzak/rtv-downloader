@@ -17,10 +17,26 @@ def parse_options():
 
     Returns:
         options, urls
+
     """
-    parser = argparse.ArgumentParser(description='Podcast downloader by radzak.')
-    parser.add_argument('urls', metavar='url', type=str, nargs='+',
-                        help='urls of sites containing videos you wish to download')
+    parser = argparse.ArgumentParser(description='Podcast downloader by radzak.',
+                                     prog='RTVdownloader')
+    urls_group = parser.add_mutually_exclusive_group(required=True)
+    urls_group.add_argument('urls',
+                            type=str,
+                            metavar='URL',
+                            default=[],
+                            nargs='*',
+                            help='urls of sites containing videos you wish to download')
+    urls_group.add_argument('-f',
+                            type=argparse.FileType('r'),
+                            dest='files',
+                            metavar='FILE',
+                            default=[],
+                            nargs='*',
+                            help='text file with urls of sites containing podcasts you '
+                                 'wish to download '
+                            )
 
     options = {
         'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
@@ -39,8 +55,8 @@ def parse_options():
         }
     }
     # TODO: Add OneTab links support
-    # TODO: Add -f file option, so you can download from a file
     # TODO: Add multithreading
+    # TODO: add dir option that defaults to the dl_path
 
     args = parser.parse_args()
-    return options, args.urls
+    return options, args.urls, args.files
