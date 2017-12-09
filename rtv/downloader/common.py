@@ -1,6 +1,7 @@
 import os
 import re
 import shlex
+import threading
 
 import inquirer
 import requests
@@ -159,12 +160,17 @@ class Downloader:
         if quality not in ('worst', 'best'):
             raise WrongQualityError
 
-        command = f'youtube-dl ' \
-                  f'-f {quality}[ext={podcast.ext(quality)}]/{quality}video+bestaudio/bestaudio ' \
-                  f'--merge-output-format "{podcast.ext(quality)}" ' \
-                  f'-o "{path}" ' \
-                  f'{podcast.url(quality)}'
-        youtube_dl.main(shlex.split(command)[1:])
+        def run():
+            command = f'youtube-dl ' \
+                      f'-f {quality}[ext={podcast.ext(quality)}]/' \
+                      f'{quality}video+bestaudio/bestaudio ' \
+                      f'--merge-output-format "{podcast.ext(quality)}" ' \
+                      f'-o "{path}" ' \
+                      f'{podcast.url(quality)}'
+            youtube_dl.main(shlex.split(command)[1:])
+
+        t = threading.Thread(target=run)
+        t.start()
 
     def download(self, quality=None):
         """
