@@ -19,7 +19,6 @@ class TvpParlamentDL(Downloader):
         return json_url
 
     def get_video_data(self):
-        self.get_html()
         soup = BeautifulSoup(self.html, 'html.parser')
 
         pattern = re.compile(r'(?P<video_ids>playVideo\s+=\s+{.*})', re.DOTALL)
@@ -52,6 +51,7 @@ class TvpParlamentDL(Downloader):
         return match.group('show_name').replace('-', ' ').title()
 
     def get_info(self):
+        self.get_html()
         data = self.get_video_data()
 
         # choose format providing manifest as it gives much flexibility in terms of quality choice

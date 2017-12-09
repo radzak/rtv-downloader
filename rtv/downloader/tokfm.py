@@ -70,10 +70,11 @@ class TokFmDL(Downloader):
         return info
 
     def get_info(self):
-        podcast_info = {}
-        self.update_podcast_info_entries(podcast_info, {
-            **self.scrape_podcast_info(),  # title, show_name, date, etc.
-            'url': self.get_real_url(),
-            'ext': 'mp3'
-        })
+        podcast_info = {
+            'entries': [{
+                **self.scrape_podcast_info(),  # title, show_name, date, etc.
+                'url': self.get_real_url(),
+                'ext': 'mp3'
+            }]
+        }
         return podcast_info

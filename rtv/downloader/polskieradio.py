@@ -21,7 +21,7 @@ class PolskieRadioDL(Downloader):
             try:
                 date_str = soup.find(*d[0], **d[1]).text.strip()
                 return datetime.datetime.strptime(date_str, d[2])
-            except AttributeError:
+            except (ValueError, AttributeError):
                 pass
 
     def get_info(self):

@@ -41,13 +41,13 @@ def clean_podcast_info(info: dict):
 
 
 def clean_title(title):
-    date_regex = r'\s*' \
+    date_regex = r'\W*' \
                  r'\d{1,2}' \
                  r'[/\-.]' \
                  r'\d{1,2}' \
                  r'[/\-.]' \
                  r'(?=\d*)(?:.{4}|.{2})' \
-                 r'\s*'
+                 r'\W*'
 
     title = re.sub(date_regex, ' ', title)
     title = re.sub(r'\s{2,}', ' ', title)

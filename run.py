@@ -13,5 +13,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# TODO: add description to file from get_info (youtube-dl)
+# TODO: add metadata to file, such as description ect., check if it is already there
 # TODO: add max download time and retry?
