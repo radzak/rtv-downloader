@@ -40,12 +40,13 @@ class RadioZetDL(Downloader):
     def get_info(self):
         self.get_html()
 
-        podcast_info = {}
-        self.update_podcast_info_entries(podcast_info, {
-            'url': self.get_real_url(),
-            'title': self.get_podcast_title(),
-            'show_name': self.get_podcast_show_name(),
-            'date': self.get_podcast_date(),
-            'ext': 'mp4'
-        })
+        podcast_info = {
+            'entries': [{
+                'url': self.get_real_url(),
+                'title': self.get_podcast_title(),
+                'show_name': self.get_podcast_show_name(),
+                'date': self.get_podcast_date(),
+                'ext': 'mp4'
+            }]
+        }
         return podcast_info
