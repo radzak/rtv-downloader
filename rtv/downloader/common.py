@@ -1,7 +1,7 @@
 import os
 import re
 import shlex
-import threading
+import multiprocessing
 
 import inquirer
 import requests
@@ -82,8 +82,9 @@ class Podcast:
         import pprint
         pprint.pprint(self.data)
 
+    # TODO: fix repr
     def __repr__(self):
-        return f"<Podcast {{'url': '{self.url}', 'title': '{self.title}'}}>"
+        return f"<Podcast {{'url': '{self.info()['url']}', 'title': '{self.info()['title']}'}}>"
 
     def __str__(self):
         return self.title
@@ -169,7 +170,7 @@ class Downloader:
                       f'{podcast.url(quality)}'
             youtube_dl.main(shlex.split(command)[1:])
 
-        t = threading.Thread(target=run)
+        t = multiprocessing.Process(target=run)
         t.start()
 
     def download(self, quality=None):
@@ -200,6 +201,7 @@ class Downloader:
 
         """
         # TODO: Fix defaults (add formatter)
+        # https://stackoverflow.com/questions/23407295/default-kwarg-values-for-pythons-str-format-method
         podcast_info = podcast.info(quality)
         clean_podcast_info(podcast_info)
 
