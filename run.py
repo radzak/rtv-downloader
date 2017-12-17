@@ -10,7 +10,9 @@ def main():
         file_urls = filter(None, (line.strip() for line in file))
         urls.extend(file_urls)
 
+    # TODO: meh :/ solution
     rtv_dl.download(set(urls))
+    rtv_dl.run_terminal_ui()
 
 
 if __name__ == '__main__':

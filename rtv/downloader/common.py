@@ -8,6 +8,7 @@ import requests
 import youtube_dl
 
 from rtv.utils import clean_filename, clean_podcast_info, get_site_name, supress_stdout
+from rtv.terminal_ui import collect_stdout
 from rtv.exceptions import WrongQualityError
 
 
@@ -93,9 +94,10 @@ class Podcast:
 class Downloader:
     _VALID_URL = None  # Redefine in subclasses.
 
-    def __init__(self, url, options):
+    def __init__(self, url, options, queue):
         self.url = url
         self.options = options
+        self.queue = queue
 
         self.html = None
         self.template = None
@@ -147,7 +149,7 @@ class Downloader:
 
     def _real_download(self, podcast, path, quality):
         """
-        Effective download to current working directory location, using youtube-dl by default.
+        Effective download, using youtube-dl by default.
         Redefine in subclasses.
         Args:
             podcast (Podcast):
@@ -162,16 +164,17 @@ class Downloader:
             raise WrongQualityError
 
         def run():
-            command = f'youtube-dl ' \
-                      f'-f {quality}[ext={podcast.ext(quality)}]/' \
-                      f'{quality}video+bestaudio/bestaudio ' \
-                      f'--merge-output-format "{podcast.ext(quality)}" ' \
-                      f'-o "{path}" ' \
-                      f'{podcast.url(quality)}'
-            youtube_dl.main(shlex.split(command)[1:])
+            with collect_stdout(self.queue):
+                command = f'youtube-dl ' \
+                          f'-f {quality}[ext={podcast.ext(quality)}]/' \
+                          f'{quality}video+bestaudio/bestaudio ' \
+                          f'--merge-output-format "{podcast.ext(quality)}" ' \
+                          f'-o "{path}" ' \
+                          f'{podcast.url(quality)}'
+                youtube_dl.main(shlex.split(command)[1:])
 
-        t = multiprocessing.Process(target=run)
-        t.start()
+        p = multiprocessing.Process(target=run)
+        p.start()
 
     def download(self, quality=None):
         """
@@ -184,8 +187,9 @@ class Downloader:
         if not quality:
             quality = self.options.get('quality', 'worst')
 
-        download_list = self.choose_podcasts(self.podcasts)  # TODO: one podcast handling
-        for podcast in download_list:
+        # download_list = self.choose_podcasts(self.podcasts)  # TODO: one podcast handling
+        # for podcast in download_list:
+        for podcast in self.podcasts:
             path = self.render_path(podcast, quality)
             self._real_download(podcast, path, quality)
 
