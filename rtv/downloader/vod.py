@@ -53,6 +53,7 @@ class VodDL(Downloader):
         if match:
             return match.group('show_name')
 
+    # TODO: check if this shitty solution works for all videos, I doubt it ... rofl
     @staticmethod
     def _extract_podcast_title(string):
         """
