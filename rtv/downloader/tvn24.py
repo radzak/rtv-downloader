@@ -1,4 +1,5 @@
 import dateparser
+import datetime
 from bs4 import BeautifulSoup
 
 from rtv.downloader.common import Downloader
@@ -17,17 +18,29 @@ class Tvn24DL(Downloader):
         soup = BeautifulSoup(self.html, 'html.parser')
 
         div = soup.find('div', class_='articleDateContainer')
-        time = div.find('time', datetime=True)
-        date_str = time['datetime'].strip()
+        time_tag = div.find('time', datetime=True)
+        date_str = time_tag['datetime'].strip()
+        time_str = div.find('span').text
 
-        return dateparser.parse(date_str)
+        date = dateparser.parse(date_str)
+        time = dateparser.parse(time_str).time()
+
+        full_date = datetime.datetime.combine(date, time)
+
+        return full_date
+
+    def get_title(self):
+        soup = BeautifulSoup(self.html, 'html.parser')
+
+        title = soup.find('title').text
+        return title
 
     def get_info(self):
         self.get_html()
 
         podcast_info = super().get_info()
 
-        title = podcast_info.pop('title')
+        title = self.get_title()
         formats = podcast_info.pop('formats')
         description = podcast_info.pop('description')
         date = self.get_podcast_date()

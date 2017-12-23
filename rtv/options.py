@@ -52,20 +52,19 @@ def parse_options():
     options = {
         'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
         'name_tmpls': {
-            'polskieradio.pl': '{date:%d-%m} {title}.{ext}',
-            'tokfm.pl': '{date:%d-%m} {title}.{ext}',
-            'radiozet.pl': '{date:%d-%m} {show_name} - {title}.{ext}',
-            'tvp.pl': '{date:%d-%m} {title}.{ext}',  # No show name available
-            'polsatnews.pl': '{date:%d-%m} {title}.{ext}',
-            'vod.pl': '{date:%d-%m} {show_name} {title}.{ext}',
-            'ipla.tv': '{date:%d-%m} {title}.{ext}',  # add showname?
-            'rmf24.pl': '{date:%d-%m} {title}.{ext}',  # add showname?
-            'tvn24.pl': '{date:%d-%m} {title}.{ext}',  # add showname?
-            'tvpparlament.pl': '{date:%d-%m} {title}.{ext}',
-            'tvp.info': '{date:%d-%m} {title}.{ext}',
+            'polskieradio.pl': '{date:%d} {title}.{ext}',
+            'tokfm.pl': '{date:%d} {title}.{ext}',
+            'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
+            'tvp.pl': '{date:%d} {title}.{ext}',  # No show name available
+            'polsatnews.pl': '{date:%d} {title}.{ext}',
+            'vod.pl': '{date:%d} {show_name} {title}.{ext}',
+            'ipla.tv': '{date:%d} {title}.{ext}',  # add showname?
+            'rmf24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
+            'tvn24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
+            'tvpparlament.pl': '{date:%d} {title}.{ext}',
+            'tvp.info': '{date:%d} {title}.{ext}',
         }
     }
-    # TODO: Add OneTab links support
     # TODO: Add multithreading
     # TODO: add dir option that defaults to the dl_path
 

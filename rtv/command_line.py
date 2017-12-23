@@ -19,9 +19,7 @@ def main():
         onetab_urls = get_urls_from_onetab(onetab)
         urls.extend(onetab_urls)
 
-    # TODO: meh :/ solution
     rtv_dl.download(set(urls))
-    rtv_dl.run_terminal_ui()
 
 
 if __name__ == '__main__':

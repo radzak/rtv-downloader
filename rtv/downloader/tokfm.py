@@ -60,11 +60,12 @@ class TokFmDL(Downloader):
 
         # translate dict key names
         info = {
-            'date': self._parse_podcast_date(info.pop('Data emisji:')),
-            'guests': info.pop('Goście:'),
-            'show_name': info.pop('Audycja:'),
-            'tags': info.pop('Tagi:'),
-            'title': info.pop('Tytuł:')
+            'date': self._parse_podcast_date(info.get('Data emisji:')),
+            'hosts': info.get('Prowadzący:'),
+            'guests': info.get('Goście:'),
+            'show_name': info.get('Audycja:'),
+            'tags': info.get('Tagi:'),
+            'title': info.get('Tytuł:')
         }
 
         return info
