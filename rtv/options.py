@@ -27,7 +27,9 @@ def parse_options():
                             metavar='URL',
                             default=[],
                             nargs='*',
-                            help='urls of sites containing videos you wish to download')
+                            help='urls of sites containing videos you wish to download'
+                            )
+
     urls_group.add_argument('-f',
                             type=argparse.FileType('r'),
                             dest='files',
@@ -36,6 +38,15 @@ def parse_options():
                             nargs='*',
                             help='text file with urls of sites containing podcasts you '
                                  'wish to download '
+                            )
+
+    urls_group.add_argument('-o',
+                            type=str,
+                            dest='onetabs',
+                            metavar='ONETAB',
+                            default=[],
+                            nargs='*',
+                            help='onetab links to sites containing podcasts you wish to download'
                             )
 
     options = {
@@ -59,4 +70,4 @@ def parse_options():
     # TODO: add dir option that defaults to the dl_path
 
     args = parser.parse_args()
-    return options, args.urls, args.files
+    return options, args
