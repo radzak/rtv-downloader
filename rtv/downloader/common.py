@@ -1,14 +1,12 @@
 import os
 import re
 import shlex
-import multiprocessing
+import threading
 
-import inquirer
 import requests
 import youtube_dl
 
 from rtv.utils import clean_filename, clean_podcast_info, get_site_name, supress_stdout
-from rtv.terminal_ui import collect_stdout
 from rtv.exceptions import WrongQualityError
 
 
@@ -24,7 +22,25 @@ class Podcast:
         formats = self.data.get('formats')
         if formats:
             func = quality_func[quality]
-            choice = func(formats, key=lambda f: f.get('quality') or f.get('height'))
+
+            def get_format_quality(f):
+                """
+                Get quality of a video. If quality key is present return its value, height otherwise.
+                Args:
+                    f (dict): format dictionary
+
+                Returns:
+                    Integer value of quality or height if present, None otherwise.
+
+                """
+                return f.get('quality') or f.get('height')
+
+            if len(formats) > 1:
+                video_formats = list(filter(get_format_quality, formats))
+                # TODO: Refactor this solution
+                choice = func(video_formats or formats, key=get_format_quality)
+            else:
+                choice = formats[0]
 
             # TODO: Fix IT!!!! it might mix quality with height
             # In[5]: min([{'height': 24}, {'quality': 23, 'height': 0}], key=lambda f: f.get(
@@ -105,7 +121,7 @@ class Downloader:
         self.podcasts = []
 
         self.load_options()
-        self.get_podcast_entries()
+        self.get_podcasts()
 
     @classmethod
     def validate_url(cls, url):
@@ -126,22 +142,23 @@ class Downloader:
         self.template = self.options['name_tmpls'].get(site_name)
         self.download_dir = self.options['dl_path']
 
-    def get_podcast_entries(self):
+    def get_podcasts(self):
         info = self.get_info()
         for entry in info.get('entries'):
             podcast = Podcast(entry)
             self.podcasts.append(podcast)
 
-    @staticmethod
-    def choose_podcasts(choices):
-        questions = [
-            inquirer.Checkbox('podcasts',
-                              message="What podcasts are you interested in?",
-                              choices=choices,
-                              ),
-        ]
-        answers = inquirer.prompt(questions)
-        return answers['podcasts']
+    # temporarily not in use
+    # @staticmethod
+    # def choose_podcasts(choices):
+    #     questions = [
+    #         inquirer.Checkbox('podcasts',
+    #                           message="What podcasts are you interested in?",
+    #                           choices=choices,
+    #                           ),
+    #     ]
+    #     answers = inquirer.prompt(questions)
+    #     return answers['podcasts']
 
     def get_html(self):
         r = requests.get(self.url)
@@ -164,17 +181,18 @@ class Downloader:
             raise WrongQualityError
 
         def run():
-            with collect_stdout(self.queue):
-                command = f'youtube-dl ' \
-                          f'-f {quality}[ext={podcast.ext(quality)}]/' \
-                          f'{quality}video+bestaudio/bestaudio ' \
-                          f'--merge-output-format "{podcast.ext(quality)}" ' \
-                          f'-o "{path}" ' \
-                          f'{podcast.url(quality)}'
-                youtube_dl.main(shlex.split(command)[1:])
+            command = f'youtube-dl ' \
+                      f'-f {quality}[ext={podcast.ext(quality)}]/' \
+                      f'{quality}video+bestaudio/bestaudio ' \
+                      f'--merge-output-format "{podcast.ext(quality)}" ' \
+                      f'-o "{path}" ' \
+                      f'{podcast.url(quality)}'
+            youtube_dl.main(shlex.split(command)[1:])
 
-        p = multiprocessing.Process(target=run)
-        p.start()
+        # TODO: add information to docstring about this
+        t = threading.Thread(target=run)
+        t.start()
+        t.join()
 
     def download(self, quality=None):
         """
@@ -212,7 +230,6 @@ class Downloader:
         filename_raw = self.template.format(**podcast_info)
         filename = clean_filename(filename_raw)
         path = os.path.join(self.download_dir, filename)
-
         return path
 
     def get_info(self):

@@ -1,33 +1,11 @@
 import datetime
 import re
-import sys
-import time
-
-import requests
 
 from rtv.downloader.common import Downloader
 
 
 class VodDL(Downloader):
     _VALID_URL = r'https?://(?:www\.)?vod\.pl/'
-
-    # TODO: Check if youtube-dl works with VOD podcasts
-    def _real_download(self, podcast, path, quality):
-        with open(path, 'wb') as f:
-            start = time.clock()
-            r = requests.get(podcast.url(quality), stream=True)
-            total_length = int(r.headers.get('content-length'))
-            dl = 0
-            if total_length is None:  # no content length header
-                f.write(r.content)
-            else:
-                for chunk in r.iter_content(1024):
-                    dl += len(chunk)
-                    f.write(chunk)
-                    done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s] %s Mb/s" % (
-                    '=' * done, ' ' * (50 - done), dl // (time.clock() - start) // 1048576))
-                    print(end='')
 
     def get_podcast_date(self):
         match = re.search(r'\'datePublished\'\s+:\s+\'(?P<date>\d{4}-\d{2}-\d{2}).*', self.html)
@@ -53,7 +31,7 @@ class VodDL(Downloader):
         if match:
             return match.group('show_name')
 
-    # TODO: check if this shitty solution works for all videos, I doubt it ... rofl
+    # TODO: check if this shitty solution works for all videos, I doubt it ... rofl, try scraping the website
     @staticmethod
     def _extract_podcast_title(string):
         """
@@ -80,12 +58,13 @@ class VodDL(Downloader):
         # initially title contains both show_name and title
         title_raw = show_name_raw = podcast_info.get('title')
 
-        self.update_podcast_info_entries(podcast_info, {
-            'title': self._extract_podcast_title(title_raw),
-            'show_name': self._extract_podcast_show_name(show_name_raw),
-            'date': self.get_podcast_date(),
-            'formats': podcast_info.pop('formats'),  # move
-            'url': podcast_info.get('url'),  # copy
-            'ext': podcast_info.get('ext'),  # copy
-        })
+        podcast_info = {
+            'entries': [{
+                'title': self._extract_podcast_title(title_raw),
+                'show_name': self._extract_podcast_show_name(show_name_raw),
+                'date': self.get_podcast_date(),
+                'url': self.url,
+                'ext': 'mp4',
+            }]
+        }
         return podcast_info

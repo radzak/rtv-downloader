@@ -96,6 +96,11 @@ class Rmf24DL(Downloader):
                 info_dict = js2py.eval_js(f'Object({data})').to_dict()
                 entries.append(self.extract_entry(info_dict))
 
+        # temporarily return only audio entries if present, otherwise return all video entries
+        audio_entries = [e for e in entries if e.get('type', 'video') == 'audio']
+        if audio_entries:
+            entries = audio_entries
+
         return {'entries': entries}
 
     def get_info(self):

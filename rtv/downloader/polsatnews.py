@@ -22,7 +22,12 @@ class PolsatNewsDL(Downloader):
     def get_podcast_show_name(self):
         title_raw = super().get_info().get('title')  # TODO: add error handling if not found (not only here)
         match = re.match(
-            r'^.*?-\s*(?P<show_name>[\w#\-.,\s]+?)(?=\s*-\s*\d{2}[:.]\d{2}[:.]\d{4}|$)', title_raw)
+            r'^.*?-\s*'
+            r'(?P<show_name>[\w#\-.,\s]+?)'
+            r'\s*-.*$', title_raw)
+
+        # TODO: Fix regex - polsatnews.pl - Prezydenci i premierzy - Jak obywatele odczują zmiany w ustawach sądowych?
+        # TODO: czasami po myślniku jest tytuł, do którego trzba dodać regexa, czasami zamiast niego jest tylko data.
 
         if match:
             return match.group('show_name').replace('-', ' ')

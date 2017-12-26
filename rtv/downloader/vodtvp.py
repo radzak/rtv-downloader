@@ -10,14 +10,15 @@ from rtv.downloader.common import Downloader
 class VodTVPDL(Downloader):
     _VALID_URL = r'https?://(?:www\.)?vod.tvp\.pl/' \
                  r'.*?' \
-                 r'(?:,?(?P<date>[\d\-]+)?)' \
+                 r'(?:,(?P<date>[\d\-]+))?' \
                  r',' \
                  r'(?P<object_id>\d+)'
 
     def get_podcast_date(self):
+        # TODO: change _VALID_URLs of Downloaders to just plain domain name and move date, showname, etc. regexes
+        # to functions, so the downloader matches the url despite of absence of additional parameters in the url
+        # then the get_x functions will just return None and the Formatter will take care of default values
         match = re.match(self._VALID_URL, self.url)
-        if not match:
-            return None
 
         date_str = match.group('date')
         date_formats = [
