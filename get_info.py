@@ -1,8 +1,15 @@
-import youtube_dl
 import pprint
+import sys
 
-url = input("Podaj url: ")
+import youtube_dl
 
-with youtube_dl.YoutubeDL() as ydl:
-    info_dict = ydl.extract_info(url, download=False)
-    pprint.pprint(info_dict)
+
+def main():
+    for url in sys.argv[1:]:
+        with youtube_dl.YoutubeDL() as ydl:
+            info_dict = ydl.extract_info(url, download=False)
+            pprint.pprint(info_dict)
+
+
+if __name__ == '__main__':
+    main()
