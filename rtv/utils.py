@@ -48,7 +48,6 @@ def clean_title(title):
                  r'[/\-.]' \
                  r'(?=\d*)(?:.{4}|.{2})' \
                  r'\W*'
-
     title = re.sub(date_regex, ' ', title)
     title = re.sub(r'\s{2,}', ' ', title)
     title = title.strip()
@@ -83,7 +82,31 @@ def rename_file(path, new_path):
 
 
 def get_ext(url):
-    """Return the filename extension from url, or '' if ext. is not present."""
+    """
+    Get extension from a url.
+    Args:
+        url (str): String representation of a url.
+
+    Returns:
+        str: Filename extension from a url (without a dot), '' if extension is not present.
+
+    """
+
     parsed = urllib.parse.urlparse(url)
     root, ext = os.path.splitext(parsed.path)
     return ext.lstrip('.')
+
+
+def delete_duplicates(seq):
+    """
+    Remove duplicates from an iterable.
+    Args:
+        seq: Iterable of various type.
+
+    Returns:
+        list: List of unique objects.
+
+    """
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
