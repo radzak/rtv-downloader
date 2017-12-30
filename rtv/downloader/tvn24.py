@@ -5,7 +5,7 @@ from rtv.downloader.common import Downloader
 
 
 class Tvn24DL(Downloader):
-    _VALID_URL = r'https?://(?:www\..*)?tvn24\.pl/.*'
+    _VALID_URL = r'https?://(?:www\.)?(?:.*\.)?tvn24\.pl/.*'
 
     def get_podcast_date(self):
         """
