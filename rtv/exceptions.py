@@ -6,5 +6,9 @@ class PodcastIdNotMatchedError(Exception):
     pass
 
 
+class WrongUrlError(Exception):
+    pass
+
+
 class WrongQualityError(Exception):
     pass
