@@ -1,12 +1,12 @@
 import pytest
 
-from rtv.downloader.downloaders import *
+from rtv.extractor.downloaders import *
 
 
 class CommonDownloaderTests:
     site_name = None
     options = None
-    downloader_class = None
+    extractor_class = None
     urls = []
     rendered_paths = []
 
@@ -34,23 +34,27 @@ class CommonDownloaderTests:
         # metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
     @pytest.fixture
-    def downloader(self, url):
-        dl = self.downloader_class(url, self.options)
-        return dl
+    def extractor(self, url):
+        ex = self.extractor_class(url, self.options)
+        return ex
 
-    def test_initialization(self, downloader, url):
-        dl = downloader
-        assert dl.url == url
-        assert dl.options == self.options
-        assert dl.template == self.options['name_tmpls'][self.site_name]
-        assert dl.download_dir == self.options['dl_path']
-        assert len(dl.podcasts) > 0
-
+    def test_initialization(self, extractor, url):
+        ex = extractor
+        assert ex.url == url
+        assert ex.options == self.options
+    
     def test_url_validation(self, url):
-        assert self.downloader_class.validate_url(url)
+        assert self.extractor_class.validate_url(url)
 
-    def test_all_podcasts_have_neccessary_info(self, downloader):
-        podcasts = downloader.podcasts
+    # TODO: get rid of multiple invokation of load_podcasts()
+    def test_loading_podcasts(self, extractor):
+        extractor.load_podcasts()
+        assert len(extractor.podcasts) > 1
+
+    def test_all_podcasts_have_neccessary_info(self, extractor):
+        extractor.load_podcasts()
+        podcasts = extractor.podcasts
+
         for p in podcasts:
             info = p.info()
             url = info.pop('url')
@@ -59,10 +63,10 @@ class CommonDownloaderTests:
             date = info.pop('date')
             assert url and title and ext and date
 
-    # def test_path_rendering(self, downloader, rendered_path):
+    # def test_path_rendering(self, extractor, rendered_path):
     #     paths = []
-    #     for p in downloader.podcasts:
-    #         paths.append(downloader.render_path(p))
+    #     for p in extractor.podcasts:
+    #         paths.append(extractor.render_path(p))
     #     assert sorted(paths) == sorted(rendered_path)
 
 
@@ -82,7 +86,7 @@ class TestPolskieRadioDownloader(CommonDownloaderTests):
             'polskieradio.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = PolskieRadioDL
+    extractor_class = PolskieRadioDL
 
 
 class TestIplaDownloader(CommonDownloaderTests):
@@ -101,16 +105,16 @@ class TestIplaDownloader(CommonDownloaderTests):
             'ipla.tv': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = IplaDL
+    extractor_class = IplaDL
 
 
 class TestPolsatNewsDownloader(CommonDownloaderTests):
     site_name = 'polsatnews.pl'
     urls = [
-        'http://www.polsatnews.pl/wideo-program/dorotagawrylukzaprasza-29112017_6496311/',
+        'http://www.polsatnews.pl/wideo-program/dorotagawrylukzaprasza-20122017_6548693/',
     ]
     rendered_paths = [
-        ['/tmp/30-11 #DorotaGawrylukZaprasza.mp4'],
+        ['/tmp/30-12 #DorotaGawrylukZaprasza.mp4'],
     ]
     options = {
         'dl_path': '/tmp',
@@ -118,7 +122,7 @@ class TestPolsatNewsDownloader(CommonDownloaderTests):
             'polsatnews.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = PolsatNewsDL
+    extractor_class = PolsatNewsDL
 
 
 class TestRadioZetDownloader(CommonDownloaderTests):
@@ -135,7 +139,7 @@ class TestRadioZetDownloader(CommonDownloaderTests):
             'radiozet.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = RadioZetDL
+    extractor_class = RadioZetDL
 
 
 class TestTokFmDownloader(CommonDownloaderTests):
@@ -152,7 +156,7 @@ class TestTokFmDownloader(CommonDownloaderTests):
             'tokfm.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = TokFmDL
+    extractor_class = TokFmDL
 
 
 class TestVodDownloader(CommonDownloaderTests):
@@ -169,7 +173,7 @@ class TestVodDownloader(CommonDownloaderTests):
             'vod.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = VodDL
+    extractor_class = VodDL
 
 
 class TestVodTVPDownloader(CommonDownloaderTests):
@@ -186,7 +190,7 @@ class TestVodTVPDownloader(CommonDownloaderTests):
             'tvp.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = VodTVPDL
+    extractor_class = VodTVPDL
 
 
 class TestRmf24Downloader(CommonDownloaderTests):
@@ -203,7 +207,7 @@ class TestRmf24Downloader(CommonDownloaderTests):
             'rmf24.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = Rmf24DL
+    extractor_class = Rmf24DL
 
 
 class TestTvn24Downloader(CommonDownloaderTests):
@@ -211,10 +215,12 @@ class TestTvn24Downloader(CommonDownloaderTests):
     urls = [
         'https://www.tvn24.pl/politico-ziobro-wsrod-osob-ktore-beda-ksztaltowac-europe-w-2018-roku,796687,s.html',
         'https://www.tvn24.pl/loza-prasowa,25,m/loza-prasowa-26-11-2017,793720.html',
+        'https://faktypofaktach.tvn24.pl/aleksander-hall-monika-platek-i-ryszard-bugaj-w-faktach-po-faktach,802854.html',
     ]
     rendered_paths = [
         ['/tmp/07-12 Za twarzą cherubinka kryje siępolityczny wojownik. Zbigniew Ziobro w rankingu Politico.mp4'],
-        ['/tmp/27-11 Loża prasowa.mp4']
+        ['/tmp/27-11 Loża prasowa.mp4'],
+        ['/tmp/01-01 Aleksander Hall, Monika Płatek i Ryszard Bugaj w Faktach po Faktach - Fakty po Faktach.mp4'],
     ]
     options = {
         'dl_path': '/tmp',
@@ -222,7 +228,7 @@ class TestTvn24Downloader(CommonDownloaderTests):
             'tvn24.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = Tvn24DL
+    extractor_class = Tvn24DL
 
 
 class TestTvpParlamentDownloader(CommonDownloaderTests):
@@ -239,7 +245,7 @@ class TestTvpParlamentDownloader(CommonDownloaderTests):
             'tvpparlament.pl': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = TvpParlamentDL
+    extractor_class = TvpParlamentDL
 
 
 class TestTvpInfoDownloader(CommonDownloaderTests):
@@ -256,4 +262,4 @@ class TestTvpInfoDownloader(CommonDownloaderTests):
             'tvp.info': '{date:%d-%m} {title}.{ext}'
         }
     }
-    downloader_class = TvpInfoDL
+    extractor_class = TvpInfoDL
