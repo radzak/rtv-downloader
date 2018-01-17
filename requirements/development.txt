@@ -1,0 +1,5 @@
+-r base.txt
+-r tests.txt
+ipython==6.2.1
+ptpython==0.41
+isort==4.2.15
