@@ -2,6 +2,24 @@ import argparse
 import os
 
 
+DEFAULT_OPTIONS = {
+    'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
+    'name_tmpls': {
+        'polskieradio.pl': '{date:%d} {title}.{ext}',
+        'tokfm.pl': '{date:%d} {title}.{ext}',
+        'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
+        'tvp.pl': '{date:%d} {title}.{ext}',  # No show name available
+        'polsatnews.pl': '{date:%d} {title}.{ext}',
+        'vod.pl': '{date:%d} {show_name} {title}.{ext}',
+        'ipla.tv': '{date:%d} {title}.{ext}',  # add showname?
+        'rmf24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
+        'tvn24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
+        'tvpparlament.pl': '{date:%d} {title}.{ext}',
+        'tvp.info': '{date:%d} {title}.{ext}',
+    }
+}
+
+
 def parse_options():
     """
     Parse command line arguments, merge them with options and return in a tuple.
@@ -20,7 +38,7 @@ def parse_options():
 
     """
     parser = argparse.ArgumentParser(description='Podcast downloader by radzak.',
-                                     prog='RTVdownloader')
+                                     prog='RtvDownloader')
     urls_group = parser.add_mutually_exclusive_group(required=True)
     urls_group.add_argument('urls',
                             type=str,
@@ -49,22 +67,8 @@ def parse_options():
                             help='onetab links to sites containing podcasts you wish to download'
                             )
 
-    options = {
-        'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
-        'name_tmpls': {
-            'polskieradio.pl': '{date:%d} {title}.{ext}',
-            'tokfm.pl': '{date:%d} {title}.{ext}',
-            'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
-            'tvp.pl': '{date:%d} {title}.{ext}',  # No show name available
-            'polsatnews.pl': '{date:%d} {title}.{ext}',
-            'vod.pl': '{date:%d} {show_name} {title}.{ext}',
-            'ipla.tv': '{date:%d} {title}.{ext}',  # add showname?
-            'rmf24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
-            'tvn24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
-            'tvpparlament.pl': '{date:%d} {title}.{ext}',
-            'tvp.info': '{date:%d} {title}.{ext}',
-        }
-    }
+    options = DEFAULT_OPTIONS
+
     # TODO: Add multithreading
     # TODO: add dir option that defaults to the dl_path
 
