@@ -4,11 +4,11 @@ import re
 
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 from rtv.utils import get_ext
 
 
-class Rmf24DL(Downloader):
+class Rmf24DL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?rmf24\.pl/'
 
     def get_podcast_date(self):

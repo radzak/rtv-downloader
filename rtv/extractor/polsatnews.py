@@ -4,10 +4,10 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class PolsatNewsDL(Downloader):
+class PolsatNewsDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?polsatnews\.pl/.*'
 
     def get_podcast_date(self):
@@ -26,8 +26,11 @@ class PolsatNewsDL(Downloader):
             r'(?P<show_name>[\w#\-.,\s]+?)'
             r'\s*-.*$', title_raw)
 
-        # TODO: Fix regex - polsatnews.pl - Prezydenci i premierzy - Jak obywatele odczują zmiany w ustawach sądowych?
-        # TODO: czasami po myślniku jest tytuł, do którego trzba dodać regexa, czasami zamiast niego jest tylko data.
+        # TODO: Fix regex: polsatnews.pl - Prezydenci i premierzy - Jak obywatele odczują zmiany w ustawach sądowych?
+        # czasami po myślniku jest tytuł, do którego trzba dodać regexa, czasami zamiast niego jest tylko data.
+        # albo sam tytuł:
+        # polsatnews.pl - Nie żyje chłopiec, pod którym załamał się lód w Opolskiem
+        # http://www.polsatnews.pl/wideo/nie-zyje-chlopiec-pod-ktorym-zalamal-sie-lod-w-opolskiem_6550622/?ref=wideo_top_kraj
 
         if match:
             return match.group('show_name').replace('-', ' ')

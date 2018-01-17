@@ -2,10 +2,10 @@ import dateparser
 import datetime
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class Tvn24DL(Downloader):
+class Tvn24DL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?(?:.*\.)?tvn24\.pl/.*'
 
     def get_podcast_date(self):

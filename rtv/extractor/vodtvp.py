@@ -4,10 +4,10 @@ import re
 
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class VodTVPDL(Downloader):
+class VodTVPDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?vod.tvp\.pl/' \
                  r'.*?' \
                  r'(?:,(?P<date>[\d\-]+))?' \

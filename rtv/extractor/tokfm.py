@@ -5,11 +5,11 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 from rtv.exceptions import PodcastIdNotMatchedError
 
 
-class TokFmDL(Downloader):
+class TokFmDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?audycje\.tokfm\.pl/.*/(?P<podcast_id>[a-z0-9-]*)'
 
     def get_real_url(self):

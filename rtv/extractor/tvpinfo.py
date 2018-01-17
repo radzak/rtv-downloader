@@ -4,10 +4,10 @@ import dateparser
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class TvpInfoDL(Downloader):
+class TvpInfoDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?tvp\.info/'
 
     def get_podcast_date(self):
@@ -36,12 +36,15 @@ class TvpInfoDL(Downloader):
 
     def get_info(self):
         self.get_html()
-        data = super().get_info()
+        # data = super().get_info()
+        # TODO: get rid of super().get_info() call -> instead scrape title, showname and url from
+        # 'http://www.tvp.pl/sess/tvplayer.php?object_id={id}'.format(id=object_id)
+        # 'https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/tvp.py'
 
         podcast_info = {
             'entries': [{
-                'title': data.get('title'),
-                'description:': data.get('description'),
+                'title': 'xD',
+                'description:': 'xD',
                 'date': self.get_podcast_date(),
                 'url': self.url,
                 'ext': 'mp4',

@@ -1,10 +1,10 @@
 import datetime
 import re
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class VodDL(Downloader):
+class VodDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?vod\.pl/'
 
     def get_podcast_date(self):

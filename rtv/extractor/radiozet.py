@@ -3,11 +3,11 @@ import re
 
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 from rtv.utils import delete_duplicates
 
 
-class RadioZetDL(Downloader):
+class RadioZetDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?radiozet\.pl/.*/(?P<show_name>[\w\-.,]+)/(?P<title>[\w\-.,]+)'
 
     def get_podcast_entries(self):

@@ -4,11 +4,12 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 from rtv.utils import get_ext
 
 
-class IplaDL(Downloader):
+class IplaDL(Extractor):
+    EXTRACTOR_NAME = 'ipla'
     _VALID_URL = r'https?://(?:www\.)?ipla\.tv/'
 
     @staticmethod
@@ -23,7 +24,8 @@ class IplaDL(Downloader):
         data_vod = soup.find('div', {'id': 'vod-player'})['data-vod-json']
         data_vod_json = json.loads(data_vod)
 
-        url = 'http://getmedia.redefine.pl/vods/get_vod/?cpid={cpid}&ua=mipla_ios/122&media_id={mid}'.format(
+        url = ('http://getmedia.redefine.pl/vods/get_vod/'
+               '?cpid={cpid}&ua=mipla_ios/122&media_id={mid}').format(
             **data_vod_json
         )
         return url

@@ -1,4 +1,4 @@
-from rtv.RTVdownloader import RTVdownloader
+from rtv.rtvdownloader import RtvDownloader
 from rtv.options import parse_options
 from rtv.onetab import get_urls_from_onetab
 
@@ -9,7 +9,7 @@ def main():
     files = args.files
     onetabs = args.onetabs
 
-    rtv_dl = RTVdownloader(options)
+    rtv_dl = RtvDownloader(options)
 
     for file in files:
         file_urls = filter(None, (line.strip() for line in file))
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     main()
 
 # TODO: add generic downloader?
-# TODO: create api to use RTVdownloader without command line
+# TODO: create api to use RtvDownloader without command line
 # TODO: add metadata to file, such as description ect., check if it is already there
 # TODO: add max download time and retry?
 # TODO: https://www.tvn24.pl/loza-prasowa,25,m/loza-prasowa-17-12-2017,799547.html

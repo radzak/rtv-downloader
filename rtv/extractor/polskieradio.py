@@ -2,10 +2,10 @@ import datetime
 
 from bs4 import BeautifulSoup
 
-from rtv.downloader.common import Downloader
+from rtv.extractor.common import Extractor
 
 
-class PolskieRadioDL(Downloader):
+class PolskieRadioDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?polskieradio\.pl/'
 
     def get_podcast_date(self):
