@@ -8,17 +8,29 @@ class VodDL(Extractor):
     _VALID_URL = r'https?://(?:www\.)?vod\.pl/'
 
     def get_podcast_date(self):
-        match = re.search(r'\'datePublished\'\s+:\s+\'(?P<date>\d{4}-\d{2}-\d{2}).*', self.html)
+        # TODO: refactor this function, don't implicitly return None
+        # TODO: use better date regex?
+
+        # "uploadDate": "2018-02-08 12:14:22+0100"
+        match = re.search(
+            r'\"uploadDate\"'
+            r'\s*:\s*' 
+            r'\"(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\+\d{4})\"'
+            r'.*',
+            self.html)
 
         if match:
             date_str = match.group('date')
-            return datetime.datetime.strptime(date_str, '%Y-%m-%d')
+            return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
 
     @staticmethod
     def _extract_podcast_show_name(string):
+        # TODO: Fix this (and extr. title) shitty docstrings (it doesn't return match object, just string)
+        # TODO: dont implicitly return None value when regex not matched
+        # TODO: wrap this into separate function which returns match object and connect two regexes
         """
-        Extract podcast show name from a string containing title, show name and sometimes date.
-        ex. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
+        Extract podcast show name from a string containing title, show name and sometimes date,
+        e.g. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
         Args:
             string (str): VOD podcast title in raw form.
 
@@ -35,8 +47,8 @@ class VodDL(Extractor):
     @staticmethod
     def _extract_podcast_title(string):
         """
-        Extract podcast title from a string containing title, show name and sometimes date.
-        ex. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
+        Extract podcast title from a string containing title, show name and sometimes date,
+        e.g. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
         Args:
             string (str): VOD podcast title in raw form.
 
@@ -57,6 +69,7 @@ class VodDL(Extractor):
 
         # initially title contains both show_name and title
         title_raw = show_name_raw = podcast_info.get('title')
+        # TODO: refactor, don't use two variables here
 
         podcast_info = {
             'entries': [{
