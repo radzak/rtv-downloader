@@ -1,49 +1,54 @@
 import datetime
 import re
 
-import requests
+import js2py
 from bs4 import BeautifulSoup
 
 from rtv.extractor.common import Extractor
 
 
-class PolsatNewsDL(Extractor):
-    _VALID_URL = r'https?://(?:www\.)?polsatnews\.pl/.*'
+class PolsatNews(Extractor):
+    SITE_NAME = 'polsatnews.pl'
+    _VALID_URL = r'https?://(?:www\.)?polsatnews\.pl/'
 
-    def get_podcast_date(self):
-        r = requests.get(self.url)
-        html = r.text
-        soup = BeautifulSoup(html, 'html.parser')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get_html()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.data = self._extract_data()
 
-        date_str = soup.find('div', class_='article-meta-data').find('div', class_='fl-right').text
-        podcast_date = datetime.datetime.strptime(date_str, '%Y-%m-%d, %H:%M')
-        return podcast_date
+    def get_date(self):
+        div = self.soup.find('div', class_='article-meta-data').find('div', class_='fl-right')
+        date_str = div.text
+        date = datetime.datetime.strptime(date_str, '%Y-%m-%d, %H:%M')
+        return date
 
-    def get_podcast_show_name(self):
-        title_raw = super().get_info().get('title')  # TODO: add error handling if not found (not only here)
-        match = re.match(
-            r'^.*?-\s*'
-            r'(?P<show_name>[\w#\-.,\s]+?)'
-            r'\s*-.*$', title_raw)
+    def _extract_data(self):
+        # TODO: add error handling if there is no script with customPackage variable
+        pattern = re.compile(r'(?P<data>customPackage\s*=\s*\[.*?\])', re.DOTALL)
+        match = pattern.search(self.html)
 
-        # TODO: Fix regex: polsatnews.pl - Prezydenci i premierzy - Jak obywatele odczują zmiany w ustawach sądowych?
-        # czasami po myślniku jest tytuł, do którego trzba dodać regexa, czasami zamiast niego jest tylko data.
-        # albo sam tytuł:
-        # polsatnews.pl - Nie żyje chłopiec, pod którym załamał się lód w Opolskiem
-        # http://www.polsatnews.pl/wideo/nie-zyje-chlopiec-pod-ktorym-zalamal-sie-lod-w-opolskiem_6550622/?ref=wideo_top_kraj
+        data_raw = match.group('data')
+        data_list = js2py.eval_js(data_raw)
+        data_dict = {d['name'].lower(): d['value'] for d in data_list}
 
-        if match:
-            return match.group('show_name').replace('-', ' ')
+        return data_dict
 
-    def get_podcast_title(self):
-        # These shows have no title, only show_name and description
-        return self.get_podcast_show_name()
+    def get_show_name(self):
+        show_name = self.data.get('series')
+        return show_name
 
-    def get_info(self):
-        podcast_info = super().get_info()
-        self.update_podcast_info_entries(podcast_info, {
-            'title': self.get_podcast_title(),
-            'show_name': self.get_podcast_show_name(),
-            'date': self.get_podcast_date(),
-        })
-        return podcast_info
+    def get_title(self):
+        title = self.data.get('title')
+        return title
+
+    def extract(self):
+        entries = [{
+            'title': self.get_title(),
+            'show_name': self.get_show_name(),
+            'date': self.get_date(),
+            'url': self.url,
+            'ext': 'mp4'
+        }]
+
+        return entries

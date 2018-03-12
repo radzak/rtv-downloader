@@ -1,16 +1,22 @@
+from bs4 import BeautifulSoup
 import datetime
 import re
 
 from rtv.extractor.common import Extractor
 
 
-class VodDL(Extractor):
+class Vod(Extractor):
+    SITE_NAME = 'vod.pl'
     _VALID_URL = r'https?://(?:www\.)?vod\.pl/'
 
-    def get_podcast_date(self):
-        # TODO: refactor this function, don't implicitly return None
-        # TODO: use better date regex?
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get_html()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.headline_match = self._extract_headline()
 
+    def get_date(self):
+        # TODO: use better date regex / use dateparser package?
         # "uploadDate": "2018-02-08 12:14:22+0100"
         match = re.search(
             r'\"uploadDate\"'
@@ -23,61 +29,34 @@ class VodDL(Extractor):
             date_str = match.group('date')
             return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S%z')
 
-    @staticmethod
-    def _extract_podcast_show_name(string):
-        # TODO: Fix this (and extr. title) shitty docstrings (it doesn't return match object, just string)
-        # TODO: dont implicitly return None value when regex not matched
-        # TODO: wrap this into separate function which returns match object and connect two regexes
-        """
-        Extract podcast show name from a string containing title, show name and sometimes date,
-        e.g. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
-        Args:
-            string (str): VOD podcast title in raw form.
+    def _extract_headline(self):
+        div = self.soup.find('div', class_='v_videoTitle')
+        headline = div.find('h2').find(text=True).strip()
 
-        Returns:
-            re.match object if successful, None otherwise.
+        pattern = re.compile(
+            r'^(?:(?P<show_name>[\w#\-.,\s]+?)\.?:\s*)?'  # optional show name
+            r'(?P<title>\b[\w#\-.,\s]+\b)'
+            r'.*$'
+        )
+        return pattern.match(headline)
 
-        """
-        match = re.match(r'^(?P<show_name>[\w#\-.,\s]+):.*$', string)
-
+    def get_show_name(self):
+        match = self.headline_match
         if match:
             return match.group('show_name')
 
-    # TODO: check if this shitty solution works for all videos, I doubt it ... rofl, try scraping the website
-    @staticmethod
-    def _extract_podcast_title(string):
-        """
-        Extract podcast title from a string containing title, show name and sometimes date,
-        e.g. 'Tomasz Lis.: Joanna Mucha, Michał Kamiński i Cezary Kucharski (9.10)'
-        Args:
-            string (str): VOD podcast title in raw form.
-
-        Returns:
-            re.match object if successful, None otherwise.
-
-        """
-        match = re.match(
-            r'^.*:\s*(?P<title>\b[\w#\-.,\s]+\b)\s*(?:\(\d{1,2}[:.]\d{1,2}\))?$', string)
-
+    def get_title(self):
+        match = self.headline_match
         if match:
             return match.group('title')
 
-    def get_info(self):
-        self.get_html()
+    def extract(self):
+        entries = [{
+            'title': self.get_title(),
+            'show_name': self.get_show_name(),
+            'date': self.get_date(),
+            'url': self.url,
+            'ext': 'mp4',
+        }]
 
-        podcast_info = super().get_info()
-
-        # initially title contains both show_name and title
-        title_raw = show_name_raw = podcast_info.get('title')
-        # TODO: refactor, don't use two variables here
-
-        podcast_info = {
-            'entries': [{
-                'title': self._extract_podcast_title(title_raw),
-                'show_name': self._extract_podcast_show_name(show_name_raw),
-                'date': self.get_podcast_date(),
-                'url': self.url,
-                'ext': 'mp4',
-            }]
-        }
-        return podcast_info
+        return entries
