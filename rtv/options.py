@@ -3,38 +3,30 @@ import os
 
 
 DEFAULT_OPTIONS = {
-    'dl_path': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
-    'name_tmpls': {
+    'download_dir': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
+    'templates': {
         'polskieradio.pl': '{date:%d} {title}.{ext}',
         'tokfm.pl': '{date:%d} {title}.{ext}',
         'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
-        'tvp.pl': '{date:%d} {title}.{ext}',  # No show name available
+        'tvp.pl': '{date:%d} {title}.{ext}',
         'polsatnews.pl': '{date:%d} {title}.{ext}',
         'vod.pl': '{date:%d} {show_name} {title}.{ext}',
-        'ipla.tv': '{date:%d} {title}.{ext}',  # add showname?
-        'rmf24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
-        'tvn24.pl': '{date:%d %H.%M} {title}.{ext}',  # add showname?
+        'ipla.tv': '{date:%d} {title}.{ext}',
+        'rmf24.pl': '{date:%d} {title}.{ext}',
+        'tvn24.pl': '{date:%d} {title}.{ext}',
         'tvpparlament.pl': '{date:%d} {title}.{ext}',
         'tvp.info': '{date:%d} {title}.{ext}',
-    }
+    },
+    'quality': 'worst'
 }
 
 
 def parse_options():
     """
-    Parse command line arguments, merge them with options and return in a tuple.
-
-    options:
-        dl_path (str) - download path for podcasts
-        name_tmpls (dict) - name templates:
-            key -> site name (domain name)
-            value -> name template, you can use:
-                {date:format} - date of last modification with a given format, ex. %m %d
-                    http://strftime.org/
-                {title} - title of podcast (supported only by youtube-dl)
+    Parse command line arguments.
 
     Returns:
-        options, urls
+        options, args
 
     """
     parser = argparse.ArgumentParser(description='Podcast downloader by radzak.',
@@ -69,8 +61,7 @@ def parse_options():
 
     options = DEFAULT_OPTIONS
 
-    # TODO: Add multithreading
-    # TODO: add dir option that defaults to the dl_path
+    # TODO: add dir option that defaults to the DEFAULT_OPTIONS['dl_path']
 
     args = parser.parse_args()
     return options, args

@@ -1,35 +1,42 @@
-from rtv.extractor import gen_extractor_classes
+from rtv.extractor import EXTRACTORS
 from rtv.utils import validate_url
 
 
 class RtvDownloader:
-    def __init__(self, options=None):
-        self.options = options
-        self.extractors = []
+    def __init__(self):
+        self.extractors = EXTRACTORS
+        self.podcasts = []
 
-        self.add_default_extractors()
-
-    def download(self, urls: set) -> None:
+    def load_podcasts(self, urls: set):
         for url in urls:
             if not validate_url(url):
                 print(f'This is not a valid url: {url}, skipping...')
+                continue
 
             for Extractor in self.extractors:
-                if Extractor.validate_url(url):
-                    extractor = Extractor(url, self.options)
-                    extractor.load_podcasts()
+                if not Extractor.validate_url(url):
+                    continue
 
-                    for podcast in extractor.podcasts:
-                        podcast.download(quality='worst')
-
-                    break
+                extractor = Extractor(url)
+                extractor.run()
+                self.podcasts.extend(extractor.podcasts)
+                break
             else:
                 print(f'None of the extractors can handle this url: {url}')
 
-    def add_default_extractors(self):
+    def download(self, **kwargs):
         """
-        Add Extractor classes returned by :meth:`~rtv.extractor.gen_extractor_classes`
-        to the end of the list.
+        Download each of the loaded podcasts.
+
+        Args:
+            **kwargs: Optional arguments that PodcastDownloader takes:
+                quality (str): Quality of the video ('best'/'worst')
+                download_dir (str): Destination directory for the downloaded podcast.
+                templates (dict): Dictionary of templates needed to generate a download path.
+
+        Returns:
+            None
+
         """
-        for extractor in gen_extractor_classes():
-            self.extractors.append(extractor)
+        for podcast in self.podcasts:
+            podcast.download(**kwargs)

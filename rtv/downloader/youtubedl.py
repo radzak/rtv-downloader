@@ -8,23 +8,11 @@ from rtv.exceptions import WrongQualityError
 
 
 class YoutubePD(PodcastDownloader):
-    def _real_download(self, path, quality):
-        """
-        Effective download, using youtube-dl by default.
-        Redefine in subclasses.
-        Args:
-            path (str):
-            quality (str): Quality of the video (best/worst). Audio quality defaults to best.
-
-        Returns:
-            None
-
-        """
-        if quality not in ('worst', 'best'):
-            raise WrongQualityError
-
-        url = self.podcast.url(quality)
-        ext = self.podcast.ext(quality)
+    def _real_download(self, path):
+        # TODO: choose the right url and extension if the 'formats' key is present in podcast data
+        quality = self.quality
+        url = self.podcast.url
+        ext = self.podcast.ext
 
         def run():
             command = f'youtube-dl ' \
@@ -35,7 +23,6 @@ class YoutubePD(PodcastDownloader):
                       f'{url}'
             youtube_dl.main(shlex.split(command)[1:])
 
-        # TODO: add information to docstring about this
         t = threading.Thread(target=run)
         t.start()
         t.join()
