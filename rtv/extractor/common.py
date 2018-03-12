@@ -4,26 +4,23 @@ import requests
 import youtube_dl
 
 from rtv.extractor.podcast import Podcast
-from rtv.utils import suppress_stdout
+from rtv.utils import suppress_stdout, get_domain_name
 
 
 class Extractor:
-    EXTRACTOR_NAME = None
+    SITE_NAME = None
     _VALID_URL = None
 
-    def __init__(self, url, options):
+    def __init__(self, url):
         self.url = url
-        self.options = options
-
         self.html = None
-        self._podcasts = []
-
-        self.load_podcasts()
+        self.podcasts = []
 
     @classmethod
     def validate_url(cls, url):
         """
         Check if the Extractor can handle the given url.
+
         Args:
             url (str): Url of the podcast.
 
@@ -34,41 +31,14 @@ class Extractor:
         match = re.match(cls._VALID_URL, url)
         return match
 
-    @property
-    def podcasts(self):
-        """
-        Returns _podcasts found by subclass of :class:`~rtv.extractor.common.Extractor`
-
-        Returns:
-             :py:obj:`list` of :obj:`~rtv.extractor.podcast.Podcast`: List of extracted _podcasts.
-
-        """
-        return self._podcasts
-
-    def load_podcasts(self):
-        info = self.get_info()
-        for entry in info.get('entries'):
-            podcast = Podcast(entry)
-            self._podcasts.append(podcast)
-
-    # @staticmethod
-    # def choose_podcasts(choices):
-    #     questions = [
-    #         inquirer.Checkbox('_podcasts',
-    #                           message="What _podcasts are you interested in?",
-    #                           choices=choices,
-    #                           ),
-    #     ]
-    #     answers = inquirer.prompt(questions)
-    #     return answers['_podcasts']
-
     def get_html(self):
         r = requests.get(self.url)
+        r.encoding = 'utf-8'
         self.html = r.text
 
     def get_info(self):
         """
-        Get information about _podcasts. Redefine in subclasses.
+        Get information about the podcasts from YoutubeDL package.
 
         Returns:
             dict: Dictionary containing various information such as title, extension, date.
@@ -79,11 +49,27 @@ class Extractor:
                 info_dict = ydl.extract_info(self.url, download=False)
                 return info_dict
 
-    # TODO: rethink its usage?? is it ever needed to update all entries?
     @staticmethod
-    def update_podcast_info_entries(podcast_info: dict, update_dict: dict):
-        entries = podcast_info.get('entries', [{}])
+    def update_entries(entries: list, data: dict):
+        """Update each entry in the list with some data."""
+        # TODO: Is mutating the list okey, making copies is such a pain in the ass
         for entry in entries:
-            entry.update(update_dict)
+            entry.update(data)
 
-        podcast_info['entries'] = entries
+    def extract(self):
+        """Extract data from the url. Redefine in subclasses."""
+        raise NotImplementedError('This method must be implemented by subclasses')
+
+    def run(self):
+        entries = self.extract()
+
+        self.update_entries(entries, {
+            'site': get_domain_name(self.url)
+        })
+
+        if not isinstance(entries, list):
+            raise TypeError('extract method must return an iterable of dictionaries')
+
+        for entry in entries:
+            podcast = Podcast(entry)
+            self.podcasts.append(podcast)

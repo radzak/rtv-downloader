@@ -1,17 +1,29 @@
-from .downloaders import *
+from .polskieradio import PolskieRadio
+from .tokfm import TokFm
+from .radiozet import RadioZet
+from .vodtvp import VodTVP
+from .polsatnews import PolsatNews
+from .vod import Vod
+from .ipla import Ipla
+from .rmf24 import Rmf24
+from .tvn24 import Tvn24
+from .tvpparlament import TvpParlament
+from .tvpinfo import TvpInfo
 
-_ALL_EXTRACTORS = [
-    cls
-    for name, cls in globals().items()
-    if name.endswith('DL')
+
+EXTRACTORS = [
+    PolskieRadio,
+    TokFm,
+    RadioZet,
+    VodTVP,
+    PolsatNews,
+    Vod,
+    Ipla,
+    Rmf24,
+    Tvn24,
+    TvpParlament,
+    TvpInfo
     ]
 
 
-def gen_extractor_classes():
-    """
-    Return a list of supported extractor classes.
-    """
-    return _ALL_EXTRACTORS
-
-
-__all__ = ['gen_extractor_classes']
+__all__ = ['EXTRACTORS']

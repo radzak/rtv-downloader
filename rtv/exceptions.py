@@ -1,14 +1,18 @@
-class PathNotMatchedError(Exception):
+class RTVException(Exception):
     pass
 
 
-class PodcastIdNotMatchedError(Exception):
+class PodcastIdNotMatchedError(RTVException):
     pass
 
 
-class WrongUrlError(Exception):
+class WrongUrlError(RTVException):
     pass
 
 
-class WrongQualityError(Exception):
+class WrongQualityError(RTVException):
+    pass
+
+
+class NoTemplateFoundError(RTVException):
     pass

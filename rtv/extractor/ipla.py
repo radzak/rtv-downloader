@@ -1,58 +1,105 @@
 import datetime
 import json
+import re
 
 import requests
-from bs4 import BeautifulSoup
 
+from rtv.exceptions import PodcastIdNotMatchedError
 from rtv.extractor.common import Extractor
 from rtv.utils import get_ext
 
 
-class IplaDL(Extractor):
-    EXTRACTOR_NAME = 'ipla'
-    _VALID_URL = r'https?://(?:www\.)?ipla\.tv/'
+class Ipla(Extractor):
+    SITE_NAME = 'ipla.tv'
+    _VALID_URL = r'https?://(?:www\.)?ipla\.tv/.*/(?P<id>[0-9a-fA-F]+)'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.podcast_id = self._extract_id()
+        self.get_html()
+        self.data = self._fetch_data()
 
     @staticmethod
-    def _parse_podcast_date(date_str):
-        date = datetime.datetime.strptime(date_str, '%d-%m-%Y')
+    def _generate_client_id(length):
+        import binascii
+        import os
+
+        return binascii.b2a_hex(os.urandom(length // 2))
+
+    def _extract_id(self):
+        # TODO: move to extractor.common? maybe merge with validate_url?
+        match = re.search(self._VALID_URL, self.url)
+
+        if match:
+            return match.group('id')
+        else:
+            raise PodcastIdNotMatchedError
+
+    def _fetch_data(self):
+        url = 'https://b2c.redefine.pl/rpc/navigation/'
+        data = {
+            'jsonrpc': '2.0',
+            'id': 1,
+            'method': 'prePlayData',
+            'params': {
+                'ua': 'www_iplatv_html5/12345',
+                # 'ua': 'www_iplatv_html5/12345 (Windows 10; widevin=true)',
+                #  can be used to get dash manifest
+                'cpid': 1,
+                'mediaId': self.podcast_id
+            }
+        }
+
+        podcast_data = requests.post(url, data=json.dumps(data)).json()
+        return podcast_data
+
+    def get_date(self):
+        date_str = self.data['result']['reporting']['gastream'][
+            'premiereDate']  # TODO: handle if not present
+        date = datetime.datetime.strptime(date_str, '%Y%m%d')
         return date
 
-    def get_json_url(self):
-        r = requests.get(self.url)
-        html = r.text
-        soup = BeautifulSoup(html, 'html.parser')
-        data_vod = soup.find('div', {'id': 'vod-player'})['data-vod-json']
-        data_vod_json = json.loads(data_vod)
+    def get_title(self):
+        # soup = BeautifulSoup(self.html, 'html.parser')
+        # title = soup.find('h1', class_='vod-title__content').text
+        title = self.data['result']['reporting']['gastream']['title']  # TODO: handle if not present
+        return title
 
-        url = ('http://getmedia.redefine.pl/vods/get_vod/'
-               '?cpid={cpid}&ua=mipla_ios/122&media_id={mid}').format(
-            **data_vod_json
-        )
-        return url
+    def get_showname(self):
+        showname = self.data['result']['reporting']['gastream'][
+            'series']  # TODO: handle if not present
+        return showname
 
-    def get_info(self):
-        """
-        Get info about the ipla podcast - get the url containing json data and construct
-        a dictionary with 'entries' key.
-        Returns:
-            dict: Podcast info dictionary.
+    def get_real_url(self):
+        sources = self.data['result']['mediaItem']['playback']['mediaSources']
+        source = min(sources, key=lambda s: s['quality'][:-1])  # choose lowest quality, e.g. 576p
+        # TODO: handle all qualities
 
-        """
-        url = self.get_json_url()
-        r = requests.get(url)
-        podcast_info = r.json()['vod']
+        key_id = source['keyId']
+        getmedia_url = source['authorizationServices']['pseudo']['url']
+        payload = {
+            'cpid': 1,
+            'id': self.podcast_id,
+            'clid': self._generate_client_id(32),
+            'keyid': key_id,
+            'ua': 'www_iplatv_html5/12345'
+        }
 
-        # TODO: Refactor & put copies into formats key
+        response = requests.get(getmedia_url, params=payload)
+        media_url = response.json()['resp']['license']['url']
 
-        formats = podcast_info['copies']
-        entry = min(formats, key=lambda k: k['quality'])  # temporary solution, just get the lowest quality
+        return media_url
 
-        podcast_info.update(entry)
-        podcast_info.update({
-            'description': podcast_info.pop('long_text'),
-            'date': self._parse_podcast_date(podcast_info['date']),
-            'ext': get_ext(podcast_info['url']),
-        })
+    def extract(self):
+        # TODO: check why ipla extracting takes so long (~20+ seconds?? for 3 requests??)
+        url = self.get_real_url()
 
-        del podcast_info['copies']
-        return {'entries': [podcast_info]}
+        entries = [{
+            'title': self.get_title(),
+            'showname': self.get_showname(),
+            'date': self.get_date(),
+            'url': url,
+            'ext': get_ext(url),
+        }]
+
+        return entries

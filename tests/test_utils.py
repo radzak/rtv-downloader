@@ -8,7 +8,7 @@ from rtv.utils import (delete_duplicates,
                        file_exists,
                        clean_filename,
                        clean_title,
-                       clean_podcast_info,
+                       clean_podcast_data,
                        get_domain_name,
                        suppress_stdout
                        )
@@ -67,16 +67,16 @@ def test_cleaning_title(dirty_title, title):
     assert clean_title(dirty_title) == title
 
 
-def test_cleaning_podcast_info():
-    podcast_info = {
+def test_cleaning_podcast_data():
+    data = {
         'title': '  podcast 12-03-16  ',
         'url': 'http://test.it/podcast.mp4',
         'ext': 'mp4'
     }
 
-    clean_podcast_info(podcast_info)
+    clean_data = clean_podcast_data(data)
 
-    assert podcast_info == {
+    assert clean_data == {
         'title': 'podcast',
         'url': 'http://test.it/podcast.mp4',
         'ext': 'mp4'

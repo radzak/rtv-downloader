@@ -9,19 +9,26 @@ from rtv.extractor.common import Extractor
 from rtv.exceptions import PodcastIdNotMatchedError
 
 
-class TokFmDL(Extractor):
+class TokFm(Extractor):
+    SITE_NAME = 'tokfm.pl'
     _VALID_URL = r'https?://(?:www\.)?audycje\.tokfm\.pl/.*/(?P<podcast_id>[a-z0-9-]*)'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get_html()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.podcast_id = self._extract_id()
+
     def get_real_url(self):
-        podcast_id = self.get_podcast_id()
-        data = {'pid': podcast_id, 'st': 'tokfm'}
+        data = {'pid': self.podcast_id, 'st': 'tokfm'}
         r = requests.post('http://audycje.tokfm.pl/gets', data=json.dumps(data))
         url = json.loads(r.text)['url']
         return url
 
-    def get_podcast_id(self):
+    def _extract_id(self):
         """
         Get podcast_id needed to obtain real_url of the podcast.
+
         Returns:
             re.match object
 
@@ -42,11 +49,8 @@ class TokFmDL(Extractor):
         return date
 
     def scrape_podcast_info(self):
-        self.get_html()
-        soup = BeautifulSoup(self.html, 'html.parser')
-
         # scrape date, show_name, guests and tags
-        tables = soup.findChildren('table')
+        tables = self.soup.findChildren('table')
         podcast_table = tables[0]  # TODO: locate it better
 
         info = {}
@@ -55,27 +59,26 @@ class TokFmDL(Extractor):
             info[aux[0].string] = aux[1].text
 
         # scrape title
-        article = soup.find('article', class_='tytul-odcinka')
+        article = self.soup.find('article', class_='tytul-odcinka')
         info['Tytuł:'] = article.find('h1').text
 
         # translate dict key names
         info = {
             'date': self._parse_podcast_date(info.get('Data emisji:')),
+            'title': info.get('Tytuł:'),
+            'show_name': info.get('Audycja:'),
             'hosts': info.get('Prowadzący:'),
             'guests': info.get('Goście:'),
-            'show_name': info.get('Audycja:'),
-            'tags': info.get('Tagi:'),
-            'title': info.get('Tytuł:')
+            'tags': info.get('Tagi:')
         }
 
         return info
 
-    def get_info(self):
-        podcast_info = {
-            'entries': [{
-                **self.scrape_podcast_info(),  # title, show_name, date, etc.
-                'url': self.get_real_url(),
-                'ext': 'mp3'
-            }]
-        }
-        return podcast_info
+    def extract(self):
+        entries = [{
+            **self.scrape_podcast_info(),  # title, show_name, date, etc.
+            'url': self.get_real_url(),
+            'ext': 'mp3'
+        }]
+
+        return entries

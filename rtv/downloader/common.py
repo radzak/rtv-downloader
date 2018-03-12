@@ -1,39 +1,53 @@
 import os
 
-from rtv.utils import clean_filename, clean_podcast_info, get_domain_name
+from rtv.exceptions import NoTemplateFoundError
+from rtv.exceptions import WrongQualityError
+from rtv.options import DEFAULT_OPTIONS
+from rtv.utils import clean_filename
+
+DEFAULT_QUALITY = DEFAULT_OPTIONS['quality']
+DEFALT_DOWNLOAD_DIR = DEFAULT_OPTIONS['download_dir']
+DEFAULT_TEMPLATES = DEFAULT_OPTIONS['templates']
 
 
 class PodcastDownloader:
-    def __init__(self, podcast, options):
-        """ Create a PodcastDownloader object with the given options."""
-        self.podcast = podcast
-        self.options = options
-        self.download_dir = options['dl_path']
+    def __init__(self, podcast, quality=None, download_dir=None, templates=None):
+        """
+        Create a PodcastDownloader for a given podcast.
+        
+        Args:
+            podcast (Podcast): Podcast object. 
+            quality (str): Quality of the video (best/worst). Audio quality defaults to best.
+            download_dir (str): Destination directory for the downloaded podcast.
+            templates (dict): Dictionary of templates needed to generate a download path.
 
-    def _real_download(self, path, quality):
-        """ Real download process. Redefine in subclasses."""
+        """
+        self.podcast = podcast
+        self.quality = quality or DEFAULT_QUALITY
+        self.download_dir = download_dir or DEFALT_DOWNLOAD_DIR
+        self.templates = templates or DEFAULT_TEMPLATES
+        
+        if self.quality not in ('worst', 'best'):
+            raise WrongQualityError
+
+    def _real_download(self, path):
+        """Real download process. Redefine in subclasses."""
         raise NotImplementedError('This method must be implemented by subclasses')
 
-    def download(self, quality):
+    def download(self):
         """
         Download podcast to target location. Choose worst quality by default, to decrease file size.
-
-        Args:
-            quality (str): Quality of the video.
 
         Returns:
             None
 
         """
-        path = self.render_path(quality)
-        self._real_download(path, quality)
+        path = self.render_path()
+        self._real_download(path)
 
-    def render_path(self, quality):
+    def render_path(self):
         """
         Render path by filling the path template with podcast information.
-
-        Args:
-            quality (str): String representation of quality ('worst'/'best').
 
         Returns:
             str: Absolute path with the template values filled in.
@@ -41,13 +55,16 @@ class PodcastDownloader:
         """
         # TODO: Fix defaults (add formatter)
         # https://stackoverflow.com/questions/23407295/default-kwarg-values-for-pythons-str-format-method
-        podcast_info = self.podcast.info(quality)
-        clean_podcast_info(podcast_info)
 
-        site_name = get_domain_name(self.podcast.url(quality))
-        template = self.options['name_tmpls'].get(site_name)
+        data = self.podcast.data
+        site_name = data['site']
 
-        filename_raw = template.format(**podcast_info)
+        try:
+            template = self.templates[site_name]
+        except KeyError:
+            raise NoTemplateFoundError
+
+        filename_raw = template.format(**data)
         filename = clean_filename(filename_raw)
         path = os.path.join(self.download_dir, filename)
         return path

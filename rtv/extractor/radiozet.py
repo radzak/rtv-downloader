@@ -7,17 +7,21 @@ from rtv.extractor.common import Extractor
 from rtv.utils import delete_duplicates
 
 
-class RadioZetDL(Extractor):
+class RadioZet(Extractor):
+    SITE_NAME = 'radiozet.pl'
     _VALID_URL = r'https?://(?:www\.)?radiozet\.pl/.*/(?P<show_name>[\w\-.,]+)/(?P<title>[\w\-.,]+)'
 
-    def get_podcast_entries(self):
-        soup = BeautifulSoup(self.html, 'html.parser')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get_html()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
 
+    def get_podcast_entries(self):
         # manifests available:
         # data-source-ss
         # data-source-dash
         # data-source-hls
-        divs = delete_duplicates(item for item in soup.find_all()
+        divs = delete_duplicates(item for item in self.soup.find_all()
                                  if 'data-source-dash' in item.attrs)
 
         # sort divs by id, first cast it to int
@@ -29,9 +33,9 @@ class RadioZetDL(Extractor):
 
         entries = [{
             'url': url,
-            'title': self.get_podcast_title(),
-            'show_name': self.get_podcast_show_name(),
-            'date': self.get_podcast_date(),
+            'title': self.get_title(),
+            'show_name': self.get_show_name(),
+            'date': self.get_date(),
             'ext': 'mp4'
         } for url in manifest_urls]
 
@@ -43,27 +47,20 @@ class RadioZetDL(Extractor):
 
         return entries
 
-    def get_podcast_date(self):
-        soup = BeautifulSoup(self.html, 'html.parser')
-
-        date_str = [item['data-date'] for item in soup.find_all() if 'data-date' in item.attrs][0]
+    def get_date(self):
+        date_str = [item['data-date'] for item in self.soup.find_all() if 'data-date' in item.attrs][0]
         podcast_date = datetime.datetime.strptime(date_str, '%d.%m.%Y %H:%M')
         return podcast_date
 
-    def get_podcast_title(self):
-        # TODO: scrape title from web
+    def get_title(self):
+        # TODO: scrape title from web?
         match = re.match(self._VALID_URL, self.url)
         return match.group('title').replace('-', ' ')
 
-    def get_podcast_show_name(self):
-        # TODO: scrape show_name from web
+    def get_show_name(self):
+        # TODO: scrape show_name from web?
         match = re.match(self._VALID_URL, self.url)
         return match.group('show_name').replace('-', ' ')
 
-    def get_info(self):
-        self.get_html()
-
-        podcast_info = {
-            'entries': self.get_podcast_entries()
-        }
-        return podcast_info
+    def extract(self):
+        return self.get_podcast_entries()

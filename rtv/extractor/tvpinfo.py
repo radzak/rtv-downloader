@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 
 import dateparser
@@ -5,49 +6,100 @@ import requests
 from bs4 import BeautifulSoup
 
 from rtv.extractor.common import Extractor
+from rtv.exceptions import PodcastIdNotMatchedError
 
 
-class TvpInfoDL(Extractor):
+class TvpInfo(Extractor):
+    SITE_NAME = 'tvp.info'
     _VALID_URL = r'https?://(?:www\.)?tvp\.info/'
 
-    def get_podcast_date(self):
-        real_url = self.get_real_url()
-        html = requests.get(real_url).text
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.url = self.get_article_url()
 
-        soup = BeautifulSoup(html, 'html.parser')
-        span = soup.find('span', class_='date')
-        if span:
-            date_str = span.text
-            return dateparser.parse(date_str)
+        # some data will be scraped from the article page
+        self.get_html()
+        self.soup = BeautifulSoup(self.html, 'html.parser')
+
+        # and some data will be scraped from the player page
+        self.podcast_id = self._extract_id()
+        self.player_url = self.get_player_url()
+        self.player_html = requests.get(self.player_url).text
+        self.player_soup = BeautifulSoup(self.player_html, 'html.parser')
+
+    def _extract_id(self):
+        pattern = re.compile(r'object_id=(?P<id>\d+)')
+        match = pattern.search(self.html)
+
+        if match:
+            return match.group('id')
         else:
-            return None
+            raise PodcastIdNotMatchedError
 
-    def get_real_url(self):
-        soup = BeautifulSoup(self.html, 'html.parser')
+    def get_article_url(self):
+        """
+        Get the url of the TVP Info article itself, not the url of the preview with
+        the 'Przejdź do artykułu' hyperlink.
+
+        Returns:
+            (str): Url of the article with the video.
+
+        """
+        html = requests.get(self.url).text
+        soup = BeautifulSoup(html, 'html.parser')
         div = soup.find('div', class_='more-back')
+
         if div:
             parsed_uri = urlparse(self.url)
             domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
             suffix = div.find('a', href=True)['href'].strip()
-            real_url = domain + suffix
-            return real_url
+            article_url = domain + suffix
+            return article_url
         else:
             return self.url
 
-    def get_info(self):
-        self.get_html()
-        # data = super().get_info()
-        # TODO: get rid of super().get_info() call -> instead scrape title, showname and url from
-        # 'http://www.tvp.pl/sess/tvplayer.php?object_id={id}'.format(id=object_id)
-        # 'https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/tvp.py'
+    def get_player_url(self):
+        """
+        Get the url of the page containing embedded video player. The html of that page contains
+        more detailed data about the podcast than the article page.
+        """
+        return f'http://www.tvp.info/sess/tvplayer.php?object_id={self.podcast_id}'
 
-        podcast_info = {
-            'entries': [{
-                'title': 'xD',
-                'description:': 'xD',
-                'date': self.get_podcast_date(),
-                'url': self.url,
-                'ext': 'mp4',
-            }]
-        }
-        return podcast_info
+    def get_date(self):
+        span = self.soup.find('span', class_='date')
+
+        if span:
+            date_str = span.text
+            return dateparser.parse(date_str)
+
+    def get_title(self):
+        title = self.player_soup.find('meta', {'property': 'og:title'})['content']
+        return title
+
+    def get_showname(self):
+        pattern = re.compile(
+            r'\"SeriesTitle\",'
+            r'\s*value:\s*'
+            r'\"(?P<showname>.*?)\"'
+        )
+        match = pattern.search(self.player_html)
+
+        if match:
+            showname = match.group('showname')
+            return showname or None
+
+    def get_description(self):
+        description = self.player_soup.find('meta', {'property': 'og:description'})['content']
+        return description
+
+    def extract(self):
+        entries = [{
+            'title': self.get_title(),
+            'showname': self.get_showname(),
+            'description:': self.get_description(),
+            'date': self.get_date(),
+            'url': self.url,
+            'ext': 'mp4',
+        }]
+
+        return entries

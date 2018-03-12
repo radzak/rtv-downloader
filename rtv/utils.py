@@ -28,6 +28,7 @@ def suppress_stdout():
     Examples:
         >>> with suppress_stdout():
         ...     print('Test print')
+
         >>> print('test')
         test
 
@@ -93,21 +94,28 @@ def get_domain_name(url):
     return f'{ext.domain}.{ext.suffix}'
 
 
-def clean_podcast_info(info):
+def clean_podcast_data(_data):
     """
-    Clean podcast info -> clean podcast title.
+    Clean podcast data:
+        -> cleans title
+        -> ...
 
     Args:
-        info (dict): Dictionary containing info about the podcast.
+        _data (dict): Information about the podcast.
 
     Returns:
-        None
+        dict: Refined podcast data.
 
     """
-    if 'title' in info:
-        info.update(
-            title=clean_title(info.pop('title'))
-        )
+
+    data = _data.copy()
+
+    # TODO: fix this ugliness
+    title = data.get('title')
+    if title:
+        data['title'] = clean_title(title)
+
+    return data
 
 
 def clean_title(title):
