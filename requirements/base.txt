@@ -1,7 +1,0 @@
-requests==2.18.4
-dateparser==0.6.0
-Js2Py==0.58
-youtube-dl==2018.1.14
-validators==0.12.0
-beautifulsoup4==4.6.0
-tldextract==2.2.0

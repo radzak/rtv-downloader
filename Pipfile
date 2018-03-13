@@ -1,0 +1,30 @@
+[[source]]
+
+name = "pypi"
+verify_ssl = true
+url = "https://pypi.python.org/simple"
+
+
+[requires]
+
+python_version = "3.6.1"
+
+
+[packages]
+
+requests = "*"
+dateparser = "*"
+"js2py" = "*"
+youtube-dl = "*"
+validators = "*"
+"beautifulsoup4" = "*"
+tldextract = "*"
+"e1839a8" = {path = ".", editable = true}
+
+
+[dev-packages]
+
+ipython = "*"
+ptpython = "*"
+isort = "*"
+pytest = "*"
