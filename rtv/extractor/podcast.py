@@ -1,3 +1,5 @@
+import pprint
+
 from rtv.downloader.youtubedl import YoutubePD
 from rtv.utils import clean_podcast_data
 
@@ -28,7 +30,6 @@ class Podcast:
 
     def print_data(self):
         """Pretty print the data of this podcast."""
-        import pprint
         pprint.pprint(self.data)
 
     def __str__(self):

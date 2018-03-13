@@ -5,10 +5,6 @@ from rtv.exceptions import WrongQualityError
 from rtv.options import DEFAULT_OPTIONS
 from rtv.utils import clean_filename
 
-DEFAULT_QUALITY = DEFAULT_OPTIONS['quality']
-DEFALT_DOWNLOAD_DIR = DEFAULT_OPTIONS['download_dir']
-DEFAULT_TEMPLATES = DEFAULT_OPTIONS['templates']
-
 
 class PodcastDownloader:
     def __init__(self, podcast, quality=None, download_dir=None, templates=None):
@@ -23,9 +19,9 @@ class PodcastDownloader:
 
         """
         self.podcast = podcast
-        self.quality = quality or DEFAULT_QUALITY
-        self.download_dir = download_dir or DEFALT_DOWNLOAD_DIR
-        self.templates = templates or DEFAULT_TEMPLATES
+        self.quality = quality or DEFAULT_OPTIONS['quality']
+        self.download_dir = download_dir or DEFAULT_OPTIONS['download_dir']
+        self.templates = templates or DEFAULT_OPTIONS['templates']
         
         if self.quality not in ('worst', 'best'):
             raise WrongQualityError
