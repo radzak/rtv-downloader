@@ -2,7 +2,6 @@ import pytest
 
 
 class ExtractorTester:
-    options = {}
     extractor_class = None
     urls = []
 
@@ -24,19 +23,10 @@ class ExtractorTester:
             metafunc.parametrize("url",
                                  self.urls,
                                  scope='class')
-        # idlist = []
-        # argnames = []
-        # argvalues = []
-        # for scenario in metafunc.cls.scenarios:
-        #     idlist.append(scenario['url'])
-        #     items = scenario.items()
-        #     argnames = [x[0] for x in items]
-        #     argvalues.append([x[1] for x in items])
-        # metafunc.parametrize(argnames, argvalues, ids=idlist, scope="class")
 
     @pytest.fixture
     def extractor(self, url):
-        ext = self.extractor_class(url, self.options)
+        ext = self.extractor_class(url)
         ext.run()
         return ext
 
