@@ -1,31 +1,45 @@
+from pathlib import Path
+
 from setuptools import setup
 
-import rtv
+packages = ['rtv', 'rtv.extractors', 'rtv.downloaders']
 
-DESCRIPTION = 'RTV downloader'
-LONG_DESCRIPTION = 'Command-line program to download videos from various sites.'
+requires = [
+    'requests',
+    'dateparser',
+    'Js2Py',
+    'youtube_dl',
+    'validators',
+    'beautifulsoup4',
+    'tldextract'
+]
 
-setup(name='rtv',
-      version=rtv.__version__,
-      description=DESCRIPTION,
-      long_description=LONG_DESCRIPTION,
-      url='https://github.com/radzak/RTVdownloader',
-      author='Radek Krzak',
-      author_email='radek.krzak@gmail.com',
-      license='MIT',
-      packages=['rtv', 'rtv.downloader', 'rtv.extractor'],
-      entry_points={
-          'console_scripts': ['rtv=rtv.cli:main'],
-      },
-      install_requires=[
-          'requests',
-          'dateparser',
-          'Js2Py',
-          'youtube_dl',
-          'validators',
-          'beautifulsoup4',
-          'tldextract'
-      ],
-      setup_requires=['pytest-runner'],
-      tests_require=['pytest'],
-      zip_safe=False)
+about = {}
+with Path('rtv', '__version__.py').open('r', encoding='utf-8') as f:
+    exec(f.read(), about)
+
+setup(
+    name=about['__title__'],
+    version=about['__version__'],
+    description=about['__description__'],
+    url=about['__url__'],
+    author=about['__author__'],
+    author_email=about['__author_email__'],
+    license=about['__license__'],
+    packages=packages,
+    entry_points={
+        'console_scripts': ['rtv=rtv.cli:main'],
+    },
+    python_requires='>=3.6',
+    install_requires=requires,
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
+    zip_safe=False,
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: End Users/Desktop',
+        'Topic :: Multimedia :: Video',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.6',
+    ]
+)

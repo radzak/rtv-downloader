@@ -1,4 +1,4 @@
-# RTVdownloader
+# rtv-downloader
 
 Download videos from Ipla.tv, Vod and other Polish video platforms.
 
@@ -29,7 +29,7 @@ You also need [Python 3.6](https://www.python.org/downloads/) or higher installe
 To install RTVdownloader, simply use [pipenv](https://github.com/pypa/pipenv) (or pip, of course):
 
 ```bash
-pipenv install git+https://github.com/radzak/RTVdownloader.git#egg=rtv
+pipenv install rtv-downloader
 ```
 
 ## Usage example
@@ -87,8 +87,8 @@ video = rtv.videos[0]
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ```bash
-git clone https://github.com/radzak/RTVdownloader.git
-cd RTVdownloader
+git clone https://github.com/radzak/rtv-downloader.git
+cd rtv-downloader
 pipenv install
 pipenv install --dev
 pipenv shell
