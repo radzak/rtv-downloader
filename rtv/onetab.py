@@ -4,13 +4,13 @@ from bs4 import BeautifulSoup
 
 def get_urls_from_onetab(onetab):
     """
-    Get podcast urls from a link to the onetab shared page.
+    Get video urls from a link to the onetab shared page.
 
     Args:
         onetab (str): Link to a onetab shared page.
 
     Returns:
-        list: List of links to podcasts.
+        list: List of links to the videos.
 
     """
     html = requests.get(onetab).text

@@ -2,7 +2,7 @@ class RTVException(Exception):
     pass
 
 
-class PodcastIdNotMatchedError(RTVException):
+class VideoIdNotMatchedError(RTVException):
     pass
 
 

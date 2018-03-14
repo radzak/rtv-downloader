@@ -28,8 +28,8 @@ class PolskieRadio(Extractor):
                 pass
 
     def extract(self):
-        podcast_info = self.get_info()
-        entries = podcast_info['entries']
+        video_info = self.get_info()
+        entries = video_info['entries']
 
         for entry in entries:
             entry.update({
@@ -38,7 +38,7 @@ class PolskieRadio(Extractor):
 
         return entries
 
-# TODO: Add support for all podcasts on this site.
+# TODO: Add support for all videos on this site.
 # https://www.polskieradio.pl/10/5370/Artykul/1934652,Bedzie-glosno-24-listopada-godz-1803
 # TODO: Scrape show name
 

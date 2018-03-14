@@ -33,15 +33,15 @@ class ExtractorTester:
     def test_url_validation(self, url):
         assert self.extractor_class.validate_url(url)
 
-    def test_podcasts_loaded(self, extractor):
-        assert len(extractor.podcasts) >= 1
+    def test_videos_loaded(self, extractor):
+        assert len(extractor.videos) >= 1
 
-    def test_all_podcasts_have_neccessary_data(self, extractor):
-        podcasts = extractor.podcasts
+    def test_all_videos_have_neccessary_data(self, extractor):
+        videos = extractor.videos
 
-        for podcast in podcasts:
-            title = podcast.title
-            date = podcast.date
-            url = podcast.url
-            ext = podcast.ext
+        for video in videos:
+            title = video.title
+            date = video.date
+            url = video.url
+            ext = video.ext
             assert title and date and url and ext

@@ -1,17 +1,17 @@
 import pprint
 import sys
 
-from rtv.rtvdownloader import RtvDownloader
+from rtv.rtvdownloader import RTVdownloader
 
 
 def main():
     urls = sys.argv[1:]
-    rtv = RtvDownloader()
-    rtv.load_podcasts(urls)
+    rtv = RTVdownloader()
+    rtv.load(urls)
 
-    for podcast in rtv.podcasts:
-        print(f'[PODCAST DATA]: {podcast}')
-        pprint.pprint(podcast.data)
+    for video in rtv.videos:
+        print(f'[VIDEO DATA]: {video}')
+        pprint.pprint(video.data)
         print()
 
 

@@ -3,16 +3,16 @@ import threading
 
 import youtube_dl
 
-from rtv.downloader.common import PodcastDownloader
+from rtv.downloader.common import VideoDownloader
 from rtv.exceptions import WrongQualityError
 
 
-class YoutubePD(PodcastDownloader):
+class YoutubePD(VideoDownloader):
     def _real_download(self, path):
-        # TODO: choose the right url and extension if the 'formats' key is present in podcast data
+        # TODO: choose the right url and extension if the 'formats' key is present in video data
         quality = self.quality
-        url = self.podcast.url
-        ext = self.podcast.ext
+        url = self.video.url
+        ext = self.video.ext
 
         def run():
             command = f'youtube-dl ' \

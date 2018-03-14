@@ -94,17 +94,17 @@ def get_domain_name(url):
     return f'{ext.domain}.{ext.suffix}'
 
 
-def clean_podcast_data(_data):
+def clean_video_data(_data):
     """
-    Clean podcast data:
+    Clean video data:
         -> cleans title
         -> ...
 
     Args:
-        _data (dict): Information about the podcast.
+        _data (dict): Information about the video.
 
     Returns:
-        dict: Refined podcast data.
+        dict: Refined video data.
 
     """
 

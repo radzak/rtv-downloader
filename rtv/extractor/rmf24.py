@@ -35,7 +35,7 @@ class Rmf24(Extractor):
         when there are 2 unrelated tracks in one info_dict.
 
         Args:
-            scraped_info (dict): Podcast info dict, scraped straight from podcast site.
+            scraped_info (dict): Video info dict, scraped straight from the website.
 
         Returns:
             dict: Entry containing title, formats (url, quality), thumbnail, etc.

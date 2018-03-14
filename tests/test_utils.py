@@ -8,7 +8,7 @@ from rtv.utils import (delete_duplicates,
                        file_exists,
                        clean_filename,
                        clean_title,
-                       clean_podcast_data,
+                       clean_video_data,
                        get_domain_name,
                        suppress_stdout
                        )
@@ -59,26 +59,26 @@ def test_cleaning_filename(dirty_name, name):
 
 
 @pytest.mark.parametrize('dirty_title, title', [
-    ('12/03/2016 podcast', 'podcast'),
-    ('     podcast 12-03-2016   ', 'podcast'),
-    ('12.03.16      podcast 12-03-16  ', 'podcast'),
+    ('12/03/2016 video', 'video'),
+    ('     video 12-03-2016   ', 'video'),
+    ('12.03.16      video 12-03-16  ', 'video'),
 ])
 def test_cleaning_title(dirty_title, title):
     assert clean_title(dirty_title) == title
 
 
-def test_cleaning_podcast_data():
+def test_cleaning_video_data():
     data = {
-        'title': '  podcast 12-03-16  ',
-        'url': 'http://test.it/podcast.mp4',
+        'title': '  video 12-03-16  ',
+        'url': 'http://test.it/video.mp4',
         'ext': 'mp4'
     }
 
-    clean_data = clean_podcast_data(data)
+    clean_data = clean_video_data(data)
 
     assert clean_data == {
-        'title': 'podcast',
-        'url': 'http://test.it/podcast.mp4',
+        'title': 'video',
+        'url': 'http://test.it/video.mp4',
         'ext': 'mp4'
     }
 

@@ -4,7 +4,7 @@ import re
 
 import requests
 
-from rtv.exceptions import PodcastIdNotMatchedError
+from rtv.exceptions import VideoIdNotMatchedError
 from rtv.extractor.common import Extractor
 from rtv.utils import get_ext
 
@@ -15,7 +15,7 @@ class Ipla(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.podcast_id = self._extract_id()
+        self.video_id = self._extract_id()
         self.get_html()
         self.data = self._fetch_data()
 
@@ -33,7 +33,7 @@ class Ipla(Extractor):
         if match:
             return match.group('id')
         else:
-            raise PodcastIdNotMatchedError
+            raise VideoIdNotMatchedError
 
     def _fetch_data(self):
         url = 'https://b2c.redefine.pl/rpc/navigation/'
@@ -46,12 +46,12 @@ class Ipla(Extractor):
                 # 'ua': 'www_iplatv_html5/12345 (Windows 10; widevin=true)',
                 #  can be used to get dash manifest
                 'cpid': 1,
-                'mediaId': self.podcast_id
+                'mediaId': self.video_id
             }
         }
 
-        podcast_data = requests.post(url, data=json.dumps(data)).json()
-        return podcast_data
+        video_data = requests.post(url, data=json.dumps(data)).json()
+        return video_data
 
     def get_date(self):
         date_str = self.data['result']['reporting']['gastream'][
@@ -79,7 +79,7 @@ class Ipla(Extractor):
         getmedia_url = source['authorizationServices']['pseudo']['url']
         payload = {
             'cpid': 1,
-            'id': self.podcast_id,
+            'id': self.video_id,
             'clid': self._generate_client_id(32),
             'keyid': key_id,
             'ua': 'www_iplatv_html5/12345'

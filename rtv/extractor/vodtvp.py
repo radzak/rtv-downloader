@@ -42,11 +42,11 @@ class VodTVP(Extractor):
 
     def get_show_name(self):
         """
-        Get podcast show name from the podcast site. It's located in the div with 'data-hover'
+        Get video show name from the website. It's located in the div with 'data-hover'
         attribute under the 'title' key.
 
         Returns:
-            str: Podcast show name.
+            str: Video show name.
 
         """
         div = self.soup.find('div', attrs={'data-hover': True})
@@ -57,14 +57,14 @@ class VodTVP(Extractor):
 
     def get_title(self):
         """
-        Get podcast title from the podcast site. It's located in the div with 'data-hover'
+        Get Video title from the website. It's located in the div with 'data-hover'
         attribute under the 'episodeCount' key.
 
         Returns:
-            str: Podcast title.
+            str: Video title.
 
         """
-        # considered as a worse solution since most of the podcasts have only date in the title
+        # considered as a worse solution since most of the videos have only date in the title
         # soup = BeautifulSoup(self.html, 'html.parser')
         # div = soup.find('div', attrs={'data-hover': True})
         # data = json.loads(div['data-hover'])
@@ -76,11 +76,11 @@ class VodTVP(Extractor):
 
     def get_description(self):
         """
-        Get podcast description from the podcast site. It's located in the meta tag
+        Get video description from the website. It's located in the meta tag
         with 'og:description' attribute under 'content' attribute.
 
         Returns:
-            str: Podcast description.
+            str: Video description.
 
         """
         description = self.soup.find('meta', {'property': 'og:description'})['content']

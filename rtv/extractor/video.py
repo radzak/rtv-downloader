@@ -1,12 +1,12 @@
 import pprint
 
 from rtv.downloader.youtubedl import YoutubePD
-from rtv.utils import clean_podcast_data
+from rtv.utils import clean_video_data
 
 
-class Podcast:
+class Video:
     def __init__(self, data):
-        self.data = clean_podcast_data(data)
+        self.data = clean_video_data(data)
 
     def download(self, **kwargs):
         ypd = YoutubePD(self, **kwargs)
@@ -29,8 +29,8 @@ class Podcast:
         return self.data.get('ext')
 
     def print_data(self):
-        """Pretty print the data of this podcast."""
+        """Pretty print the data of this video."""
         pprint.pprint(self.data)
 
     def __str__(self):
-        return f'Podcast - {self.title}'
+        return f'Video - {self.title}'

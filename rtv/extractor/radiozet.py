@@ -16,7 +16,7 @@ class RadioZet(Extractor):
         self.get_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
-    def get_podcast_entries(self):
+    def get_entries(self):
         # manifests available:
         # data-source-ss
         # data-source-dash
@@ -39,7 +39,7 @@ class RadioZet(Extractor):
             'ext': 'mp4'
         } for url in manifest_urls]
 
-        # radiozet podcasts are usually divided into 2 or more videos,
+        # radiozet videos are usually divided into 2 or more videos,
         # a suffix is appended to the title, so there are no duplicated titles
         if len(entries) > 1:
             for index, entry in enumerate(entries, 1):
@@ -49,8 +49,8 @@ class RadioZet(Extractor):
 
     def get_date(self):
         date_str = [item['data-date'] for item in self.soup.find_all() if 'data-date' in item.attrs][0]
-        podcast_date = datetime.datetime.strptime(date_str, '%d.%m.%Y %H:%M')
-        return podcast_date
+        date = datetime.datetime.strptime(date_str, '%d.%m.%Y %H:%M')
+        return date
 
     def get_title(self):
         # TODO: scrape title from web?
@@ -63,4 +63,4 @@ class RadioZet(Extractor):
         return match.group('show_name').replace('-', ' ')
 
     def extract(self):
-        return self.get_podcast_entries()
+        return self.get_entries()

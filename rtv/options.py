@@ -29,8 +29,8 @@ def parse_options():
         options, args
 
     """
-    parser = argparse.ArgumentParser(description='Podcast downloader by radzak.',
-                                     prog='RtvDownloader')
+    parser = argparse.ArgumentParser(description='Video downloader by radzak.',
+                                     prog='RTVdownloader')
     urls_group = parser.add_mutually_exclusive_group(required=True)
     urls_group.add_argument('urls',
                             type=str,
@@ -46,7 +46,7 @@ def parse_options():
                             metavar='FILE',
                             default=[],
                             nargs='*',
-                            help='text file with urls of sites containing podcasts you '
+                            help='text file with urls of sites containing videos you '
                                  'wish to download '
                             )
 
@@ -56,7 +56,7 @@ def parse_options():
                             metavar='ONETAB',
                             default=[],
                             nargs='*',
-                            help='onetab links to sites containing podcasts you wish to download'
+                            help='onetab links containing urls of the videos you wish to download'
                             )
 
     options = DEFAULT_OPTIONS

@@ -44,9 +44,9 @@ class TvpParlament(Extractor):
         match = pattern.search(div.text)
 
         date_str = match.group('date')
-        podcast_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+        date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 
-        return podcast_date
+        return date
 
     def get_show_name(self):
         # TODO: scrape show_name from web

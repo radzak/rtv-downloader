@@ -1,13 +1,15 @@
+from typing import Iterable
+
 from rtv.extractor import EXTRACTORS
 from rtv.utils import validate_url
 
 
-class RtvDownloader:
+class RTVdownloader:
     def __init__(self):
         self.extractors = EXTRACTORS
-        self.podcasts = []
+        self.videos = []
 
-    def load_podcasts(self, urls: set):
+    def load(self, urls: Iterable):
         for url in urls:
             if not validate_url(url):
                 print(f'This is not a valid url: {url}, skipping...')
@@ -19,24 +21,24 @@ class RtvDownloader:
 
                 extractor = Extractor(url)
                 extractor.run()
-                self.podcasts.extend(extractor.podcasts)
+                self.videos.extend(extractor.videos)
                 break
             else:
                 print(f'None of the extractors can handle this url: {url}')
 
     def download(self, **kwargs):
         """
-        Download each of the loaded podcasts.
+        Download each of the loaded videos.
 
         Args:
-            **kwargs: Optional arguments that PodcastDownloader takes:
+            **kwargs: Optional arguments that VideoDownloader takes:
                 quality (str): Quality of the video ('best'/'worst')
-                download_dir (str): Destination directory for the downloaded podcast.
+                download_dir (str): Destination directory for the downloaded video.
                 templates (dict): Dictionary of templates needed to generate a download path.
 
         Returns:
             None
 
         """
-        for podcast in self.podcasts:
-            podcast.download(**kwargs)
+        for video in self.videos:
+            video.download(**kwargs)

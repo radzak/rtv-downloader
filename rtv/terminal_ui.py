@@ -110,8 +110,8 @@ class BodyView(urwid.Pile):
 class TerminalUI:
     """
     Simple terminal UI with header, footer and body containing:
-        a) information about podcasts being downloaded
-        b) choice menu for new podcasts.
+        a) information about videos being downloaded
+        b) choice menu for new videos.
     Initialize with your TerminalUI instance to execute commands and then
     start main loop TerminalUI.loop().
     Output download information from other other processes with
@@ -375,7 +375,7 @@ def run(queue, start, step):
 
 if __name__ == '__main__':
     q = Queue()
-    ui = TerminalUI('RTV podcast downloader', q)
+    ui = TerminalUI('RTV video downloader', q)
 
     t1 = Process(target=run, args=(q, 500, 600))
     t1.daemon = True

@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from rtv.extractor.common import Extractor
-from rtv.exceptions import PodcastIdNotMatchedError
+from rtv.exceptions import VideoIdNotMatchedError
 
 
 class TvpInfo(Extractor):
@@ -22,7 +22,7 @@ class TvpInfo(Extractor):
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
         # and some data will be scraped from the player page
-        self.podcast_id = self._extract_id()
+        self.video_id = self._extract_id()
         self.player_url = self.get_player_url()
         self.player_html = requests.get(self.player_url).text
         self.player_soup = BeautifulSoup(self.player_html, 'html.parser')
@@ -34,7 +34,7 @@ class TvpInfo(Extractor):
         if match:
             return match.group('id')
         else:
-            raise PodcastIdNotMatchedError
+            raise VideoIdNotMatchedError
 
     def get_article_url(self):
         """
@@ -61,9 +61,9 @@ class TvpInfo(Extractor):
     def get_player_url(self):
         """
         Get the url of the page containing embedded video player. The html of that page contains
-        more detailed data about the podcast than the article page.
+        more detailed data about the video than the article page.
         """
-        return f'http://www.tvp.info/sess/tvplayer.php?object_id={self.podcast_id}'
+        return f'http://www.tvp.info/sess/tvplayer.php?object_id={self.video_id}'
 
     def get_date(self):
         span = self.soup.find('span', class_='date')

@@ -6,19 +6,19 @@ from rtv.options import DEFAULT_OPTIONS
 from rtv.utils import clean_filename
 
 
-class PodcastDownloader:
-    def __init__(self, podcast, quality=None, download_dir=None, templates=None):
+class VideoDownloader:
+    def __init__(self, video, quality=None, download_dir=None, templates=None):
         """
-        Create a PodcastDownloader for a given podcast.
+        Create a VideoDownloader for a given video.
         
         Args:
-            podcast (Podcast): Podcast object. 
+            video (Video): Video object.
             quality (str): Quality of the video (best/worst). Audio quality defaults to best.
-            download_dir (str): Destination directory for the downloaded podcast.
+            download_dir (str): Destination directory for the downloaded video.
             templates (dict): Dictionary of templates needed to generate a download path.
 
         """
-        self.podcast = podcast
+        self.video = video
         self.quality = quality or DEFAULT_OPTIONS['quality']
         self.download_dir = download_dir or DEFAULT_OPTIONS['download_dir']
         self.templates = templates or DEFAULT_OPTIONS['templates']
@@ -32,7 +32,7 @@ class PodcastDownloader:
 
     def download(self):
         """
-        Download podcast to target location. Choose worst quality by default, to decrease file size.
+        Download video to target location. Choose worst quality by default, to decrease file size.
 
         Returns:
             None
@@ -43,7 +43,7 @@ class PodcastDownloader:
 
     def render_path(self):
         """
-        Render path by filling the path template with podcast information.
+        Render path by filling the path template with video information.
 
         Returns:
             str: Absolute path with the template values filled in.
@@ -52,7 +52,7 @@ class PodcastDownloader:
         # TODO: Fix defaults (add formatter)
         # https://stackoverflow.com/questions/23407295/default-kwarg-values-for-pythons-str-format-method
 
-        data = self.podcast.data
+        data = self.video.data
         site_name = data['site']
 
         try:

@@ -1,4 +1,4 @@
-from rtv.rtvdownloader import RtvDownloader
+from rtv.rtvdownloader import RTVdownloader
 from rtv.options import parse_options
 from rtv.onetab import get_urls_from_onetab
 
@@ -9,7 +9,7 @@ def main():
     files = args.files
     onetabs = args.onetabs
 
-    rtv = RtvDownloader()
+    rtv = RTVdownloader()
 
     for file in files:
         file_urls = filter(None, (line.strip() for line in file))
@@ -19,7 +19,7 @@ def main():
         onetab_urls = get_urls_from_onetab(onetab)
         urls.extend(onetab_urls)
 
-    rtv.load_podcasts(set(urls))
+    rtv.load(set(urls))
     rtv.download(**options)
 
 
