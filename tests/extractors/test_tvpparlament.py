@@ -1,4 +1,4 @@
-from rtv.extractor.tvpparlament import TvpParlament
+from rtv.extractors.tvpparlament import TvpParlament
 
 from ..test_extractors import ExtractorTester
 

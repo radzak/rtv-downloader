@@ -1,4 +1,4 @@
-from rtv.extractor.rmf24 import Rmf24
+from rtv.extractors.rmf24 import Rmf24
 
 from ..test_extractors import ExtractorTester
 

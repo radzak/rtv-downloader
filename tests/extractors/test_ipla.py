@@ -1,4 +1,4 @@
-from rtv.extractor.ipla import Ipla
+from rtv.extractors.ipla import Ipla
 
 from ..test_extractors import ExtractorTester
 

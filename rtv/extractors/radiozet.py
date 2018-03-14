@@ -3,7 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-from rtv.extractor.common import Extractor
+from rtv.extractors.common import Extractor
 from rtv.utils import delete_duplicates
 
 

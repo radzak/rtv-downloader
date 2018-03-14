@@ -1,4 +1,4 @@
-from rtv.extractor.tvpinfo import TvpInfo
+from rtv.extractors.tvpinfo import TvpInfo
 
 from ..test_extractors import ExtractorTester
 

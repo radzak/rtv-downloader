@@ -5,7 +5,7 @@ import re
 import requests
 
 from rtv.exceptions import VideoIdNotMatchedError
-from rtv.extractor.common import Extractor
+from rtv.extractors.common import Extractor
 from rtv.utils import get_ext
 
 

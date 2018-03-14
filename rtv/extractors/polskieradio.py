@@ -2,7 +2,7 @@ import datetime
 
 from bs4 import BeautifulSoup
 
-from rtv.extractor.common import Extractor
+from rtv.extractors.common import Extractor
 
 
 class PolskieRadio(Extractor):

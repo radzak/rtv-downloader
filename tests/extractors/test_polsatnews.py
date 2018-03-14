@@ -1,4 +1,4 @@
-from rtv.extractor.polsatnews import PolsatNews
+from rtv.extractors.polsatnews import PolsatNews
 
 from ..test_extractors import ExtractorTester
 

@@ -3,7 +3,7 @@ import threading
 
 import youtube_dl
 
-from rtv.downloader.common import VideoDownloader
+from rtv.downloaders.common import VideoDownloader
 from rtv.exceptions import WrongQualityError
 
 

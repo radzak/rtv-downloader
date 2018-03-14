@@ -1,4 +1,4 @@
-from rtv.extractor.tvn24 import Tvn24
+from rtv.extractors.tvn24 import Tvn24
 
 from ..test_extractors import ExtractorTester
 

@@ -1,4 +1,4 @@
-from rtv.extractor.tokfm import TokFm
+from rtv.extractors.tokfm import TokFm
 
 from ..test_extractors import ExtractorTester
 

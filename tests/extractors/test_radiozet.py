@@ -1,4 +1,4 @@
-from rtv.extractor.radiozet import RadioZet
+from rtv.extractors.radiozet import RadioZet
 
 from ..test_extractors import ExtractorTester
 

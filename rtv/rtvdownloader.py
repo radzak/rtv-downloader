@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from rtv.extractor import EXTRACTORS
+from rtv.extractors import EXTRACTORS
 from rtv.utils import validate_url
 
 

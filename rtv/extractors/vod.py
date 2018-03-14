@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import datetime
 import re
 
-from rtv.extractor.common import Extractor
+from rtv.extractors.common import Extractor
 
 
 class Vod(Extractor):
@@ -31,14 +31,18 @@ class Vod(Extractor):
 
     def _extract_headline(self):
         div = self.soup.find('div', class_='v_videoTitle')
-        headline = div.find('h2').find(text=True).strip()
 
-        pattern = re.compile(
-            r'^(?:(?P<show_name>[\w#\-.,\s]+?)\.?:\s*)?'  # optional show name
-            r'(?P<title>\b[\w#\-.,\s]+\b)'
-            r'.*$'
-        )
-        return pattern.match(headline)
+        if div:
+            headline = div.find('h2').find(text=True).strip()
+
+            pattern = re.compile(
+                r'^(?:(?P<show_name>[\w#\-.,\s]+?)\.?:\s*)?'  # optional show name
+                r'(?P<title>\b[\w#\-.,\s]+\b)'
+                r'.*$'
+            )
+            return pattern.match(headline)
+
+        return None
 
     def get_show_name(self):
         match = self.headline_match

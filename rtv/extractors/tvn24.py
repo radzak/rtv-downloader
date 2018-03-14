@@ -2,7 +2,7 @@ import dateparser
 import datetime
 from bs4 import BeautifulSoup
 
-from rtv.extractor.common import Extractor
+from rtv.extractors.common import Extractor
 
 
 class Tvn24(Extractor):

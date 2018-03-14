@@ -3,7 +3,7 @@ import re
 import requests
 import youtube_dl
 
-from rtv.extractor.video import Video
+from rtv.video import Video
 from rtv.utils import suppress_stdout, get_domain_name
 
 

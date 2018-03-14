@@ -1,4 +1,4 @@
-from rtv.extractor.vodtvp import VodTVP
+from rtv.extractors.vodtvp import VodTVP
 
 from ..test_extractors import ExtractorTester
 

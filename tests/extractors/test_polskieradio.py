@@ -1,4 +1,4 @@
-from rtv.extractor.polskieradio import PolskieRadio
+from rtv.extractors.polskieradio import PolskieRadio
 
 from ..test_extractors import ExtractorTester
 

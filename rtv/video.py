@@ -1,6 +1,6 @@
 import pprint
 
-from rtv.downloader.youtubedl import YoutubePD
+from rtv.downloaders.youtubedl import YoutubePD
 from rtv.utils import clean_video_data
 
 
