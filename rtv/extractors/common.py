@@ -13,6 +13,7 @@ class Extractor:
 
     def __init__(self, url):
         self.url = url
+        self.request = None
         self.html = None
         self.videos = []
 
@@ -34,6 +35,7 @@ class Extractor:
     def get_html(self):
         r = requests.get(self.url)
         r.encoding = 'utf-8'
+        self.request = r
         self.html = r.text
 
     def get_info(self):
