@@ -1,17 +1,12 @@
 [[source]]
-
 name = "pypi"
 verify_ssl = true
 url = "https://pypi.python.org/simple"
 
-
 [requires]
-
-python_version = "3.6.1"
-
+python_version = "3.6.5"
 
 [packages]
-
 requests = "*"
 dateparser = "*"
 "js2py" = "*"
@@ -21,9 +16,7 @@ validators = "*"
 tldextract = "*"
 "e1839a8" = {path = ".", editable = true}
 
-
 [dev-packages]
-
 ipython = "*"
 ptpython = "*"
 isort = "*"
