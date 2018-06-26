@@ -26,89 +26,27 @@ class Rmf24(Extractor):
         except ValueError:
             return None
 
-    @staticmethod
-    def extract_entry(scraped_info):
-        """
-        Transform scraped_info dictionary into an entry, under the assumption that there is only
-        one track in 'track' list, since each video/audio is instantiated individually
-        on the RMF website and each of them is scraped independently, so there shouldn't be cases
-        when there are 2 unrelated tracks in one info_dict.
+    def _get_audio_entries(self) -> list:
+        # .embed .audio
+        entries = [audio['src'] for audio in self.soup.find_all('audio')]
+        return entries
 
-        Args:
-            scraped_info (dict): Video info dict, scraped straight from the website.
-
-        Returns:
-            dict: Entry containing title, formats (url, quality), thumbnail, etc.
-
-        """
-        quality_mapping = {  # ascending in terms of quality
-            'lo': 0,
-            'hi': 1
-        }
-
-        entry = scraped_info['tracks'][0]
-        '''
-        The structure of entry is as follows:
-
-        'src': {
-            'hi': [
-                {
-                'src': 'http://v.iplsc.com/30-11-gosc-marek-jakubiak/0007124B3CGCAE6P-A1.mp4',
-                'type': 'video/mp4'
-                }
-            ],
-            'lo': [
-                {
-                'src': 'http://v.iplsc.com/30-11-gosc-marek-jakubiak/0007124B3CGCAE6P-A1.mp4',
-                'type': 'video/mp4'
-                }
-            ]
-        }
-        '''
-
-        sources = entry.pop('src')
-
-        # TODO: #LOW_PRIOR Remove date from title of audio files e.g. '10.06 Gość: Jarosław Gowin'
-
-        formats = []
-        for src_name, src in sources.items():
-            url = src[0]['src']
-            formats.append({
-                'url': url,
-                'quality': quality_mapping[src_name],
-                'ext': get_ext(url),
-                'width': int(scraped_info.get('width', 0)),
-                'height': int(scraped_info.get('height', 0)),
-            })
-
-        # outer level url and ext come from the video of the lowest quality
-        # you can access rest of the urls under 'formats' key
-        worst_format = min(formats, key=lambda f: f['quality'])
-        entry.update({
-            **entry.pop('data'),
-            'formats': formats,
-            'url': worst_format['url'],
-            'ext': worst_format['ext']
-        })
-
-        return entry
+    def _get_video_entries(self) -> list:
+        # .embed-video video > source
+        entries = [video['src'] for video in self.soup.select('video > source')]
+        return entries
 
     def _scrape_entries(self):
-        entries = []
-
-        pattern = re.compile(r'Video.createInstance\((?P<js_object>{.*?})\);', re.DOTALL)
-        scripts = self.soup.findAll('script', text=pattern)
-
-        for script in scripts:
-            matches = pattern.findall(script.text)
-            for data in matches:  # matches is a list of matched strings, not match objects
-                info_dict = js2py.eval_js(f'Object({data})').to_dict()
-                entries.append(self.extract_entry(info_dict))
+        audio_entries = self._get_audio_entries()
+        video_entries = self._get_video_entries()
 
         # temporarily return only audio entries if present, otherwise return all video entries
-        audio_entries = [e for e in entries if e.get('type', 'video') == 'audio']
         if audio_entries:
             entries = audio_entries
+        else:
+            entries = video_entries
+
+        print(entries)
 
         return entries
 
@@ -118,5 +56,9 @@ class Rmf24(Extractor):
         self.update_entries(entries, {
             'date': self.get_date(),
         })
+
+        print(entries)
+        import sys
+        sys.exit(1)
 
         return entries

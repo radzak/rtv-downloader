@@ -24,7 +24,9 @@ class TokFm(Extractor):
 
     def get_real_url(self):
         data = {'pid': self.video_id, 'st': 'tokfm'}
-        r = requests.post('http://audycje.tokfm.pl/gets', data=json.dumps(data), cookies=self.request.cookies)
+        r = requests.post('http://audycje.tokfm.pl/gets',
+                          data=json.dumps(data),
+                          cookies=self.request.cookies)
         url = json.loads(r.text)['url']
         return url
 
@@ -46,7 +48,8 @@ class TokFm(Extractor):
         else:
             raise VideoIdNotMatchedError
 
-    def _process_info(self, raw_info: VideoInfo) -> VideoInfo:
+    @staticmethod
+    def _process_info(raw_info: VideoInfo) -> VideoInfo:
         """Process raw information about the video (parse date, etc.)."""
         raw_date = raw_info.date
         date = datetime.datetime.strptime(raw_date, '%Y-%m-%d %H:%M')  # 2018-04-05 17:00
