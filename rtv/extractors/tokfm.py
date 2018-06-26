@@ -24,7 +24,9 @@ class TokFm(Extractor):
 
     def get_real_url(self) -> str:
         data = {'pid': self.video_id, 'st': 'tokfm'}
-        r = requests.post('http://audycje.tokfm.pl/gets', data=json.dumps(data), cookies=self.response.cookies)
+        r = requests.post('http://audycje.tokfm.pl/gets',
+                          data=json.dumps(data),
+                          cookies=self.request.cookies)
         url = json.loads(r.text)['url']
         return url
 

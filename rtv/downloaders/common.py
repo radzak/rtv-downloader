@@ -22,7 +22,7 @@ class VideoDownloader:
         self.quality = quality or DEFAULT_OPTIONS['quality']
         self.download_dir = download_dir or DEFAULT_OPTIONS['download_dir']
         self.templates = templates or DEFAULT_OPTIONS['templates']
-        
+
         if self.quality not in ('worst', 'best'):
             raise WrongQualityError
 
