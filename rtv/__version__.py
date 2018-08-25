@@ -1,6 +1,6 @@
 __title__ = 'rtv-downloader'
 __description__ = 'Command-line program to download videos from various sites.'
-__url__ = 'https://github.com/radzak/RTVdownloader'
+__url__ = 'https://github.com/radzak/rtv-downloader'
 __version__ = '2.0.4'
 __author__ = 'Radek Krzak'
 __author_email__ = 'radek.krzak@gmail.com'
