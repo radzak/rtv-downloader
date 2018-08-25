@@ -13,7 +13,7 @@ class RadioZet(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
     def get_entries(self):
@@ -49,6 +49,7 @@ class RadioZet(Extractor):
 
     def get_date(self):
         date_str = [item['data-date'] for item in self.soup.find_all() if 'data-date' in item.attrs][0]
+        # refactor
         date = datetime.datetime.strptime(date_str, '%d.%m.%Y %H:%M')
         return date
 

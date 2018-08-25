@@ -23,7 +23,7 @@ class VodTVP(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
     def get_date(self):

@@ -1,12 +1,17 @@
+from typing import List, Type
+
 import pytest
+from _pytest.python import Metafunc
+
+from rtv.extractors.common import Extractor
 
 
 class ExtractorTester:
-    extractor_class = None
-    urls = []
+    extractor_class: Type[Extractor]
+    urls: List[str] = []
 
     # consider it as @pytest.fixture(params=urls) working at collection time
-    def pytest_generate_tests(self, metafunc):
+    def pytest_generate_tests(self, metafunc: Metafunc) -> None:
         """
         It is basically a parametrized pytest fixture, but due to the fact that
         fixtures still don't work in collection time, this solution is necessary
@@ -25,18 +30,20 @@ class ExtractorTester:
                                  scope='class')
 
     @pytest.fixture
-    def extractor(self, url):
+    def extractor(self, url) -> Extractor:
         ext = self.extractor_class(url)
         ext.run()
         return ext
 
-    def test_url_validation(self, url):
+    def test_url_validation(self, url: str):
         assert self.extractor_class.validate_url(url)
 
-    def test_videos_loaded(self, extractor):
+    @staticmethod
+    def test_videos_loaded(extractor: Extractor):
         assert len(extractor.videos) >= 1
 
-    def test_all_videos_have_neccessary_data(self, extractor):
+    @staticmethod
+    def test_all_videos_have_necessary_data(extractor: Extractor):
         videos = extractor.videos
 
         for video in videos:

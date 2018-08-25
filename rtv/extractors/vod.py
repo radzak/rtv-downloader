@@ -11,7 +11,7 @@ class Vod(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
         self.headline_match = self._extract_headline()
 

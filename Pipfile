@@ -15,6 +15,7 @@ validators = "*"
 "beautifulsoup4" = "*"
 tldextract = "*"
 "e1839a8" = {path = ".", editable = true}
+mypy = "*"
 
 [dev-packages]
 ipython = "*"

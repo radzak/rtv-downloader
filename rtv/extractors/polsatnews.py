@@ -13,7 +13,7 @@ class PolsatNews(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
         self.data = self._extract_data()
 

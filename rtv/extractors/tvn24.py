@@ -1,7 +1,9 @@
+from datetime import datetime
+
 import dateparser
-import datetime
 from bs4 import BeautifulSoup
 
+from rtv.extractors.common import Entries
 from rtv.extractors.common import Extractor
 
 
@@ -11,11 +13,11 @@ class Tvn24(Extractor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
-    def get_date(self):
-        div = self.soup.find('div', class_='articleDateContainer')
+    def get_date(self) -> datetime:
+        div = self.soup.select_one('div.articleDateContainer')
         time_tag = div.find('time', datetime=True)
         date_str = time_tag['datetime'].strip()
         time_str = div.find('span').text
@@ -23,11 +25,10 @@ class Tvn24(Extractor):
         date = dateparser.parse(date_str)
         time = dateparser.parse(time_str).time()
 
-        full_date = datetime.datetime.combine(date, time)
+        full_date = datetime.combine(date, time)
         return full_date
 
-    def extract(self):
+    def extract(self) -> Entries:
         entry = self.get_info()
         entry['date'] = self.get_date()
-
         return [entry]

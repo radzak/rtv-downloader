@@ -1,13 +1,13 @@
-import datetime
-from collections import namedtuple
 import json
 import re
+from collections import namedtuple
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.extractors.common import Extractor
 from rtv.exceptions import VideoIdNotMatchedError
+from rtv.extractors.common import Extractor, Entries
 
 
 class TokFm(Extractor):
@@ -15,25 +15,22 @@ class TokFm(Extractor):
     _VALID_URL = r'https?://(?:www\.)?audycje\.tokfm\.pl/.*/(?P<video_id>[a-z0-9-]*)'
     VideoInfo = namedtuple('VideoInfo', ('date', 'showname', 'host', 'guests'))
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
         self.video_id = self._extract_id()
         self.info = self._scrape_info()
 
-    def get_real_url(self):
+    def get_real_url(self) -> str:
         data = {'pid': self.video_id, 'st': 'tokfm'}
-        r = requests.post('http://audycje.tokfm.pl/gets', data=json.dumps(data), cookies=self.request.cookies)
+        r = requests.post('http://audycje.tokfm.pl/gets', data=json.dumps(data), cookies=self.response.cookies)
         url = json.loads(r.text)['url']
         return url
 
-    def _extract_id(self):
+    def _extract_id(self) -> str:
         """
-        Get video_id needed to obtain real_url of the video.
-
-        Returns:
-            re.match object
+        Get video_id needed to obtain the real_url of the video.
 
         Raises:
             VideoIdNotMatchedError: If video_id is not matched with regular expression.
@@ -46,10 +43,11 @@ class TokFm(Extractor):
         else:
             raise VideoIdNotMatchedError
 
-    def _process_info(self, raw_info: VideoInfo) -> VideoInfo:
+    @staticmethod
+    def _process_info(raw_info: VideoInfo) -> VideoInfo:
         """Process raw information about the video (parse date, etc.)."""
         raw_date = raw_info.date
-        date = datetime.datetime.strptime(raw_date, '%Y-%m-%d %H:%M')  # 2018-04-05 17:00
+        date = datetime.strptime(raw_date, '%Y-%m-%d %H:%M')  # 2018-04-05 17:00
         video_info = raw_info._replace(date=date)
         return video_info
 
@@ -63,15 +61,15 @@ class TokFm(Extractor):
         video_info = self._process_info(raw_info)
         return video_info
 
-    def get_title(self):
+    def get_title(self) -> str:
         title = self.soup.select_one('meta[property="og:title"]')['content']
         return title
 
-    def get_description(self):
-        title = self.soup.select_one('meta[property="og:description"]')['content']
-        return title
+    def get_description(self) -> str:
+        description = self.soup.select_one('meta[property="og:description"]')['content']
+        return description
 
-    def extract(self):
+    def extract(self) -> Entries:
         entries = [{
             **self.info._asdict(),
             'title': self.get_title(),

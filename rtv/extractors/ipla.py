@@ -16,7 +16,7 @@ class Ipla(Extractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.video_id = self._extract_id()
-        self.get_html()
+        self.load_html()
         self.data = self._fetch_data()
 
     @staticmethod

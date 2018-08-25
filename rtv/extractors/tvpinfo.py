@@ -18,7 +18,7 @@ class TvpInfo(Extractor):
         self.url = self.get_article_url()
 
         # some data will be scraped from the article page
-        self.get_html()
+        self.load_html()
         self.soup = BeautifulSoup(self.html, 'html.parser')
 
         # and some data will be scraped from the player page
