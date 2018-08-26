@@ -14,7 +14,7 @@ class RadioZet(Extractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
 
     def get_entries(self):
         # manifests available:

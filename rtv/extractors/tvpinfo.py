@@ -19,13 +19,13 @@ class TvpInfo(Extractor):
 
         # some data will be scraped from the article page
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
 
         # and some data will be scraped from the player page
         self.video_id = self._extract_id()
         self.player_url = self.get_player_url()
         self.player_html = requests.get(self.player_url).text
-        self.player_soup = BeautifulSoup(self.player_html, 'html.parser')
+        self.player_soup = BeautifulSoup(self.player_html, 'lxml')
 
     def _extract_id(self):
         pattern = re.compile(r'object_id=(?P<id>\d+)')
@@ -46,7 +46,7 @@ class TvpInfo(Extractor):
 
         """
         html = requests.get(self.url).text
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, 'lxml')
         div = soup.find('div', class_='more-back')
 
         if div:

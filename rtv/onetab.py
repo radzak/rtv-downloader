@@ -14,7 +14,7 @@ def get_urls_from_onetab(onetab):
 
     """
     html = requests.get(onetab).text
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html, 'lxml')
 
     divs = soup.findAll('div', {'style': 'padding-left: 24px; '
                                          'padding-top: 8px; '

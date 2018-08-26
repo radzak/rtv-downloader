@@ -24,7 +24,7 @@ class VodTVP(Extractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
 
     def get_date(self):
         match = re.match(self._VALID_URL, self.url)
@@ -65,7 +65,7 @@ class VodTVP(Extractor):
 
         """
         # considered as a worse solution since most of the videos have only date in the title
-        # soup = BeautifulSoup(self.html, 'html.parser')
+        # soup = BeautifulSoup(self.html, 'lxml')
         # div = soup.find('div', attrs={'data-hover': True})
         # data = json.loads(div['data-hover'])
         # title = data.get('episodeCount')
@@ -95,5 +95,5 @@ class VodTVP(Extractor):
             'url': self.url,
             'ext': 'mp4'
         }]
-        
+
         return entries

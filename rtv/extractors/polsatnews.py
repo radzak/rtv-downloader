@@ -14,7 +14,7 @@ class PolsatNews(Extractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
         self.data = self._extract_data()
 
     def get_date(self):

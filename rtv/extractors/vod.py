@@ -12,7 +12,7 @@ class Vod(Extractor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
         self.headline_match = self._extract_headline()
 
     def get_date(self):

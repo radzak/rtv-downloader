@@ -60,7 +60,7 @@ class Ipla(Extractor):
         return date
 
     def get_title(self):
-        # soup = BeautifulSoup(self.html, 'html.parser')
+        # soup = BeautifulSoup(self.html, 'lxml')
         # title = soup.find('h1', class_='vod-title__content').text
         title = self.data['result']['reporting']['gastream']['title']  # TODO: handle if not present
         return title

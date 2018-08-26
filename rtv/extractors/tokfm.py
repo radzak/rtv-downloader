@@ -18,7 +18,7 @@ class TokFm(Extractor):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.load_html()
-        self.soup = BeautifulSoup(self.html, 'html.parser')
+        self.soup = BeautifulSoup(self.html, 'lxml')
         self.video_id = self._extract_id()
         self.info = self._scrape_info()
 
