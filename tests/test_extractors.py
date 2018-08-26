@@ -38,12 +38,10 @@ class ExtractorTester:
     def test_url_validation(self, url: str):
         assert self.extractor_class.validate_url(url)
 
-    @staticmethod
-    def test_videos_loaded(extractor: Extractor):
+    def test_videos_loaded(self, extractor: Extractor):
         assert len(extractor.videos) >= 1
 
-    @staticmethod
-    def test_all_videos_have_necessary_data(extractor: Extractor):
+    def test_all_videos_have_necessary_data(self, extractor: Extractor):
         videos = extractor.videos
 
         for video in videos:

@@ -5,17 +5,18 @@ import os
 DEFAULT_OPTIONS = {
     'download_dir': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
     'templates': {
-        'polskieradio.pl': '{date:%d} {title}.{ext}',
-        'tokfm.pl': '{date:%d} {title}.{ext}',
-        'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
-        'tvp.pl': '{date:%d} {title}.{ext}',
-        'polsatnews.pl': '{date:%d} {title}.{ext}',
-        'vod.pl': '{date:%d} {show_name} {title}.{ext}',
         'ipla.tv': '{date:%d} {title}.{ext}',
+        'polsatnews.pl': '{date:%d} {title}.{ext}',
+        'polskieradio.pl': '{date:%d} {title}.{ext}',
+        'radiozet.pl': '{date:%d} {show_name} - {title}.{ext}',
         'rmf24.pl': '{date:%d} {title}.{ext}',
+        'tokfm.pl': '{date:%d} {title}.{ext}',
         'tvn24.pl': '{date:%d} {title}.{ext}',
-        'tvpparlament.pl': '{date:%d} {title}.{ext}',
         'tvp.info': '{date:%d} {title}.{ext}',
+        'tvp.pl': '{date:%d} {title}.{ext}',
+        'tvpparlament.pl': '{date:%d} {title}.{ext}',
+        'vod.pl': '{date:%d} {show_name} - {title}.{ext}',
+        'wp.pl': '{date:%d} {show_name} - {title}.{ext}'
     },
     'quality': 'worst'
 }
