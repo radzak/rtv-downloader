@@ -1,7 +1,6 @@
 import os
 
-from rtv.exceptions import NoTemplateFoundError
-from rtv.exceptions import WrongQualityError
+from rtv.exceptions import NoTemplateFoundError, WrongQualityError
 from rtv.options import DEFAULT_OPTIONS
 from rtv.utils import clean_filename
 

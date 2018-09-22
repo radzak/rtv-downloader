@@ -1,11 +1,11 @@
 import re
-from typing import ClassVar, Match, Optional, List, Dict, Any
+from typing import Any, ClassVar, Dict, List, Match, Optional
 
 import requests
 import youtube_dl
 from bs4 import BeautifulSoup
 
-from rtv.utils import suppress_stdout, get_domain_name
+from rtv.utils import get_domain_name, suppress_stdout
 from rtv.video import Video
 
 Entry = Dict[str, Any]

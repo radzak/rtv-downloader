@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import dateparser
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.extractors.common import Extractor, Entries
+from rtv.extractors.common import Entries, Extractor
 
 
 class Wp(Extractor):

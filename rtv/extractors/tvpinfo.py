@@ -5,8 +5,8 @@ import dateparser
 import requests
 from bs4 import BeautifulSoup
 
-from rtv.extractors.common import Extractor
 from rtv.exceptions import VideoIdNotMatchedError
+from rtv.extractors.common import Extractor
 
 
 class TvpInfo(Extractor):

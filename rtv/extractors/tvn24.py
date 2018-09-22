@@ -3,8 +3,7 @@ from datetime import datetime
 import dateparser
 from bs4 import BeautifulSoup
 
-from rtv.extractors.common import Entries
-from rtv.extractors.common import Extractor
+from rtv.extractors.common import Entries, Extractor
 
 
 class Tvn24(Extractor):

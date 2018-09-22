@@ -1,7 +1,6 @@
 import argparse
 from pathlib import Path
 
-
 DEFAULT_OPTIONS = {
     'download_dir': Path.home() / 'Desktop' / 'RTV',
     'templates': {

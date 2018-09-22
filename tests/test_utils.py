@@ -1,19 +1,14 @@
-import pytest
 import os
 import sys
 from io import StringIO
 
-from rtv.utils import (delete_duplicates,
-                       get_ext,
-                       file_exists,
-                       clean_filename,
-                       clean_title,
-                       clean_video_data,
-                       get_domain_name,
-                       suppress_stdout
-                       )
+import pytest
 
 from rtv.exceptions import WrongUrlError
+from rtv.utils import (
+    clean_filename, clean_title, clean_video_data, delete_duplicates,
+    file_exists, get_domain_name, get_ext, suppress_stdout
+)
 
 
 @pytest.mark.parametrize('sequence_type', [

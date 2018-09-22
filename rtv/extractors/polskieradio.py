@@ -41,4 +41,3 @@ class PolskieRadio(Extractor):
 # TODO: Add support for all videos on this site.
 # https://www.polskieradio.pl/10/5370/Artykul/1934652,Bedzie-glosno-24-listopada-godz-1803
 # TODO: Scrape show name
-

@@ -1,6 +1,7 @@
-from bs4 import BeautifulSoup
 import datetime
 import re
+
+from bs4 import BeautifulSoup
 
 from rtv.extractors.common import Extractor
 

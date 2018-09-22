@@ -1,6 +1,6 @@
-from rtv.rtvdownloader import RTVdownloader
-from rtv.options import parse_options
 from rtv.onetab import get_urls_from_onetab
+from rtv.options import parse_options
+from rtv.rtvdownloader import RTVdownloader
 
 
 def main():
