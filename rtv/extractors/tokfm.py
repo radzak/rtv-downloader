@@ -7,10 +7,12 @@ import requests
 from bs4 import BeautifulSoup
 
 from rtv.exceptions import VideoIdNotMatchedError
-from rtv.extractors.common import Extractor, Entries
+from rtv.extractors.common import (
+    Entries, Extractor, GenericDescriptionMixin, GenericTitleMixin
+)
 
 
-class TokFm(Extractor):
+class TokFm(GenericTitleMixin, GenericDescriptionMixin, Extractor):
     SITE_NAME = 'tokfm.pl'
     _VALID_URL = r'https?://(?:www\.)?audycje\.tokfm\.pl/.*/(?P<video_id>[a-z0-9-]*)'
     VideoInfo = namedtuple('VideoInfo', ('date', 'showname', 'host', 'guests'))
@@ -58,18 +60,12 @@ class TokFm(Extractor):
         cells = [row.select('.tok-divTableCell')[1] for row in rows]
         cells[1].find('span').decompose()  # delete "Obserwuj" text
 
+        # TODO: Guests have too much spaces between each guest
+        # http://audycje.tokfm.pl/podcast/KRS-wybiera-nowych-sedziow-Sadu-Najwyzszego-Kaminski-Intencje-od-poczatku-byly-jasne-i-od-poczatku-byly-zle/66219
         data = [cell.get_text(strip=True) for cell in cells]
         raw_info = self.VideoInfo(*data)
         video_info = self._process_info(raw_info)
         return video_info
-
-    def get_title(self) -> str:
-        title = self.soup.select_one('meta[property="og:title"]')['content']
-        return title
-
-    def get_description(self) -> str:
-        description = self.soup.select_one('meta[property="og:description"]')['content']
-        return description
 
     def extract(self) -> Entries:
         entries = [{
