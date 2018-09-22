@@ -1,13 +1,15 @@
 import datetime
 import re
+from typing import Dict
 
 import js2py
 from bs4 import BeautifulSoup
+from dateparser.search import search_dates
 
-from rtv.extractors.common import Extractor
+from rtv.extractors.common import Extractor, GenericDescriptionMixin
 
 
-class PolsatNews(Extractor):
+class PolsatNews(GenericDescriptionMixin, Extractor):
     SITE_NAME = 'polsatnews.pl'
     _VALID_URL = r'https?://(?:www\.)?polsatnews\.pl/'
 
@@ -17,22 +19,16 @@ class PolsatNews(Extractor):
         self.soup = BeautifulSoup(self.html, 'lxml')
         self.data = self._extract_data()
 
-    def get_date(self):
-        div = self.soup.find('div', class_='article-meta-data').find('div', class_='fl-right')
-        date_str = div.text
-        date = datetime.datetime.strptime(date_str, '%Y-%m-%d, %H:%M')
-        return date
-
-    def _extract_data(self):
-        # TODO: add error handling if there is no script with customPackage variable
+    def _extract_data(self) -> Dict[str, str]:
         pattern = re.compile(r'(?P<data>customPackage\s*=\s*\[.*?\])', re.DOTALL)
         match = pattern.search(self.html)
 
-        data_raw = match.group('data')
-        data_list = js2py.eval_js(data_raw)
-        data_dict = {d['name'].lower(): d['value'] for d in data_list}
-
-        return data_dict
+        if match:
+            data_raw = match.group('data')
+            data_list = js2py.eval_js(data_raw)
+            data_dict = {d['name'].lower(): d['value'] for d in data_list}
+            return data_dict
+        return {}
 
     def get_show_name(self):
         show_name = self.data.get('series')
@@ -42,9 +38,21 @@ class PolsatNews(Extractor):
         title = self.data.get('title')
         return title
 
+    def get_date(self):
+        div = self.soup.select_one('div.article-meta-data div.fl-right')
+        if div:
+            date_str = div.text
+            date = datetime.datetime.strptime(date_str, '%Y-%m-%d, %H:%M')
+        else:
+            description = self.get_description()
+            _, date = search_dates(description)[0]
+        # TODO: Using dateparser everywhere?
+        return date
+
     def extract(self):
         entries = [{
             'title': self.get_title(),
+            'description': self.get_description(),
             'show_name': self.get_show_name(),
             'date': self.get_date(),
             'url': self.url,
