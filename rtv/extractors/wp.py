@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import dateparser
 import requests
@@ -29,27 +29,28 @@ class Wp(Extractor):
         video_data = requests.get(json_url).json()['clip']
         return video_data
 
-    def get_title(self) -> str:
+    def get_title(self) -> Optional[str]:
         title = self.data.get('title')
         return title
 
-    def get_description(self) -> str:
+    def get_description(self) -> Optional[str]:
         description = self.data.get('description')
         return description
 
     def get_tags(self) -> List[str]:
-        tags = self.data.get('tags').split(',')
+        tags = self.data.get('tags', '').split(',')
         return tags
 
-    def get_show_name(self) -> str:
+    def get_show_name(self) -> Optional[str]:
         show_name = self.data['media'].get('program')
         return show_name
 
-    def get_date(self) -> datetime:
+    def get_date(self) -> Optional[datetime]:
         raw_date = self.data['media'].get('createDate')
         if raw_date:
             date = dateparser.parse(raw_date)
             return date
+        return None
 
     @staticmethod
     def quality_comparator(video_data):
