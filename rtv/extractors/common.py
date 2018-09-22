@@ -3,6 +3,7 @@ from typing import ClassVar, Match, Optional, List, Dict, Any
 
 import requests
 import youtube_dl
+from bs4 import BeautifulSoup
 
 from rtv.utils import suppress_stdout, get_domain_name
 from rtv.video import Video
@@ -67,3 +68,25 @@ class Extractor:
         for entry in entries:
             video = Video(entry)
             self.videos.append(video)
+
+
+class GenericTitleMixin:
+    soup: BeautifulSoup
+
+    def get_title(self) -> Optional[str]:
+        meta_tag = self.soup.select_one('meta[property="og:title"]')
+        if meta_tag:
+            title = meta_tag.get('content')
+            return title
+        return None
+
+
+class GenericDescriptionMixin:
+    soup: BeautifulSoup
+
+    def get_description(self) -> Optional[str]:
+        meta_tag = self.soup.select_one('meta[property="og:description"]')
+        if meta_tag:
+            description = meta_tag.get('content')
+            return description
+        return None
