@@ -1,9 +1,9 @@
 import argparse
-import os
+from pathlib import Path
 
 
 DEFAULT_OPTIONS = {
-    'download_dir': os.path.join(os.path.expanduser('~'), 'Desktop', 'RTV'),
+    'download_dir': Path.home() / 'Desktop' / 'RTV',
     'templates': {
         'ipla.tv': '{date:%d} {title}.{ext}',
         'polsatnews.pl': '{date:%d} {title}.{ext}',
