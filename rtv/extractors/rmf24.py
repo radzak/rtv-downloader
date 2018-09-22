@@ -1,14 +1,16 @@
-import datetime
-import js2py
 import re
+from datetime import datetime
+from typing import Optional
 
 from bs4 import BeautifulSoup
 
-from rtv.extractors.common import Extractor
+from rtv.extractors.common import (
+    Extractor, GenericDescriptionMixin, GenericTitleMixin
+)
 from rtv.utils import get_ext
 
 
-class Rmf24(Extractor):
+class Rmf24(GenericTitleMixin, GenericDescriptionMixin, Extractor):
     SITE_NAME = 'rmf24.pl'
     _VALID_URL = r'https?://(?:www\.)?rmf24\.pl/'
 
@@ -16,15 +18,15 @@ class Rmf24(Extractor):
         super().__init__(*args, **kwargs)
         self.load_html()
         self.soup = BeautifulSoup(self.html, 'lxml')
+        # TODO: use decorators to mark the need to use bs4?
+        # TODO: make_soup(html=Optional) or/and load_html(url=Optional)
 
-    def get_date(self):
-        dates = self.soup.find('div', class_='article-date')
-        date_published_str = dates.find('meta', {'itemprop': 'datePublished'}).attrs['content']
-
-        try:
-            return datetime.datetime.strptime(date_published_str, '%Y-%m-%dT%H:%M:%S')
-        except ValueError:
-            return None
+    def get_date(self) -> Optional[datetime]:
+        meta_tag = self.soup.select_one('meta[itemprop=datePublished]')
+        if meta_tag:
+            date_published_str = meta_tag.get('content')
+            return datetime.strptime(date_published_str, '%Y-%m-%dT%H:%M:%S')
+        return None
 
     @staticmethod
     def extract_entry(scraped_info):
@@ -113,10 +115,15 @@ class Rmf24(Extractor):
         return entries
 
     def extract(self):
-        entries = self._scrape_entries()
+        audio_url = self._get_audio_source_url()
+        extension = get_ext(audio_url)
 
-        self.update_entries(entries, {
+        entries = [{
+            'title': self.get_title(),
+            'description': self.get_description(),
             'date': self.get_date(),
-        })
+            'url': audio_url,
+            'ext': extension
+        }]
 
         return entries
