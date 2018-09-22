@@ -47,7 +47,7 @@ class Wp(Extractor):
 
     def get_date(self) -> datetime:
         raw_date = self.data['media'].get('createDate')
-        if raw_date is not None:
+        if raw_date:
             date = dateparser.parse(raw_date)
             return date
 

@@ -7,10 +7,10 @@ from rtv.utils import clean_filename
 
 
 class VideoDownloader:
-    def __init__(self, video, quality=None, download_dir=None, templates=None):
+    def __init__(self, video, quality=None, download_dir=None, templates=None) -> None:
         """
         Create a VideoDownloader for a given video.
-        
+
         Args:
             video (Video): Video object.
             quality (str): Quality of the video (best/worst). Audio quality defaults to best.
@@ -26,30 +26,18 @@ class VideoDownloader:
         if self.quality not in ('worst', 'best'):
             raise WrongQualityError
 
-    def _real_download(self, path):
+    def _real_download(self, path) -> None:
         """Real download process. Redefine in subclasses."""
         raise NotImplementedError('This method must be implemented by subclasses')
 
-    def download(self):
-        """
-        Download video to target location. Choose worst quality by default, to decrease file size.
-
-        Returns:
-            None
-
-        """
+    def download(self) -> None:
+        """Download video to target location. Choose worst quality by default, to decrease file size."""
         path = self.render_path()
         self._real_download(path)
 
-    def render_path(self):
-        """
-        Render path by filling the path template with video information.
-
-        Returns:
-            str: Absolute path with the template values filled in.
-
-        """
-        # TODO: Fix defaults (add formatter)
+    def render_path(self) -> str:
+        """Render path by filling the path template with video information."""
+        # TODO: Fix defaults when date is not found (empty string or None)
         # https://stackoverflow.com/questions/23407295/default-kwarg-values-for-pythons-str-format-method
 
         from string import Formatter

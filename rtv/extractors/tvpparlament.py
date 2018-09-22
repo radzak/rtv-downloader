@@ -1,8 +1,8 @@
 import datetime
-import js2py
 import re
-import requests
 
+import js2py
+import requests
 from bs4 import BeautifulSoup
 
 from rtv.extractors.common import Extractor
@@ -20,9 +20,11 @@ class TvpParlament(Extractor):
 
     @staticmethod
     def _get_json_url(*, object_id, sdt_version, **kwargs):
-        json_url = f'http://www.tvpparlament.pl/shared/cdn/tokenizer_v2.php' \
-                   f'?object_id={object_id}' \
-                   f'&std_version={sdt_version}'
+        json_url = (
+            f'http://www.tvpparlament.pl/shared/cdn/tokenizer_v2.php'
+            f'?object_id={object_id}'
+            f'&std_version={sdt_version}'
+        )
         return json_url
 
     def _fetch_data(self):
@@ -63,7 +65,7 @@ class TvpParlament(Extractor):
             'title': self.data.get('title'),
             'show_name': self.get_show_name(),
             'date': self.get_date(),
-            'url': entry.get('url'),
+            'url': entry['url'],
             'ext': 'mp4',
         }]
 

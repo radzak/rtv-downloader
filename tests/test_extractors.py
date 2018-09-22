@@ -25,7 +25,7 @@ class ExtractorTester:
 
         """
         if 'url' in metafunc.fixturenames:
-            metafunc.parametrize("url",
+            metafunc.parametrize('url',
                                  self.urls,
                                  scope='class')
 

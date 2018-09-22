@@ -11,7 +11,7 @@ class Tvn24(Extractor):
     SITE_NAME = 'tvn24.pl'
     _VALID_URL = r'https?://(?:www\.)?(?:.*\.)?tvn24\.pl/.*'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.load_html()
         self.soup = BeautifulSoup(self.html, 'lxml')
