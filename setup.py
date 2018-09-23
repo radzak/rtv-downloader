@@ -5,13 +5,14 @@ from setuptools import setup
 packages = ['rtv', 'rtv.extractors', 'rtv.downloaders']
 
 requires = [
-    'requests',
+    'beautifulsoup4',
     'dateparser',
     'Js2Py',
-    'youtube_dl',
-    'validators',
-    'beautifulsoup4',
+    'lxml',
+    'requests',
     'tldextract'
+    'validators',
+    'youtube_dl',
 ]
 
 about = {}
