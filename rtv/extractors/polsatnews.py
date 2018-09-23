@@ -39,15 +39,20 @@ class PolsatNews(GenericDescriptionMixin, Extractor):
         return title
 
     def get_date(self):
+        # TODO: refactor, handle if parsing fails, come up with a more generic solution
         div = self.soup.select_one('div.article-meta-data div.fl-right')
         if div:
             date_str = div.text
             date = datetime.datetime.strptime(date_str, '%Y-%m-%d, %H:%M')
-        else:
-            description = self.get_description()
-            _, date = search_dates(description)[0]
-        # TODO: Using dateparser everywhere?
-        return date
+            return date
+
+        description = self.get_description()
+        found_dates = search_dates(description, languages=['pl'])
+        if found_dates:
+            _, date = found_dates[0]
+            return date
+
+        return None
 
     def extract(self):
         entries = [{
