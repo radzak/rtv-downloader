@@ -3,6 +3,8 @@ import json
 import re
 
 import requests
+from dateparser.search import search_dates
+from bs4 import BeautifulSoup
 
 from rtv.exceptions import VideoIdNotMatchedError
 from rtv.extractors.common import Extractor
@@ -17,6 +19,7 @@ class Ipla(Extractor):
         super().__init__(*args, **kwargs)
         self.video_id = self._extract_id()
         self.load_html()
+        self.soup = BeautifulSoup(self.html, 'lxml')
         self.data = self._fetch_data()
 
     @staticmethod
@@ -54,9 +57,16 @@ class Ipla(Extractor):
         return video_data
 
     def get_date(self):
-        date_str = self.data['result']['reporting']['gastream'][
-            'premiereDate']  # TODO: handle if not present
-        date = datetime.datetime.strptime(date_str, '%Y%m%d')
+        description_tag = self.soup.select_one('.description-content__paragraph')
+        description = description_tag.get_text(strip=True)
+        found_dates = search_dates(description, languages=['pl'])
+
+        if found_dates:
+            _, date = found_dates[0]
+        else:
+            # TODO: handle if not present
+            date_str = self.data['result']['reporting']['gastream']['premiereDate']
+            date = datetime.datetime.strptime(date_str, '%Y%m%d')
         return date
 
     def get_title(self):
@@ -66,8 +76,8 @@ class Ipla(Extractor):
         return title
 
     def get_showname(self):
-        showname = self.data['result']['reporting']['gastream'][
-            'series']  # TODO: handle if not present
+        # TODO: handle if not present
+        showname = self.data['result']['reporting']['gastream']['series']
         return showname
 
     def get_real_url(self):
